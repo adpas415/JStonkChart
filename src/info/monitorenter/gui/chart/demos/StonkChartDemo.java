@@ -32,16 +32,20 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static java.lang.Boolean.TRUE;
+
 public class StonkChartDemo extends JPanel {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+
+        StonkChartDemo chart = new StonkChartDemo();
 
         // Make it visible:
         // Create a frame.
         JFrame frame = new JFrame("StonkChartDemo");
         // add the chart to the frame:
-        frame.getContentPane().add(new StonkChartDemo());
+        frame.getContentPane().add(chart);
         frame.setSize(400, 300);
         // Enable the termination button [cross on the upper right edge]:
         frame.addWindowListener(new WindowAdapter() {
@@ -54,6 +58,8 @@ public class StonkChartDemo extends JPanel {
             }
         });
         frame.setVisible(true);
+
+        chart.populateChart();
 
     }
 
@@ -95,22 +101,14 @@ public class StonkChartDemo extends JPanel {
         setLayout(new BorderLayout());
         add(chartStack);
 
-        try {
-
-            populateChart();
-
-        } catch (Exception ex) {
-            System.out.println("Failed to Populate Chart!");
-            ex.printStackTrace();
-        }
 
     }
 
-    private void importCSV(String resourcePath, Consumer<Map<String, String>> rowConsumer) throws Exception {
+    private void importCSV(String fileName, int limit, Consumer<Map<String, String>> rowConsumer) throws Exception {
 
-        String csv_pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+        String csv_pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", resourcesRootDir = "/";
 
-        InputStream resourceAsStream = getClass().getResourceAsStream(resourcePath);
+        InputStream resourceAsStream = getClass().getResourceAsStream(resourcesRootDir+fileName);
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream))) {
 
@@ -118,7 +116,7 @@ public class StonkChartDemo extends JPanel {
 
             int lineNum = 0;
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null && (limit == -1 ? TRUE : limit-- > 0)) {
 
                 try {
 
@@ -156,12 +154,9 @@ public class StonkChartDemo extends JPanel {
 
     }
 
-    private void populateChart() throws Exception {
+    public void populateChart() throws Exception {
 
-        String demoFile = "/info/monitorenter/gui/chart/demos/AAPL.csv";
-
-        //Date,Low,Open,Volume,High,Close,Adjusted Close
-        importCSV( demoFile, row -> {
+        importCSV( "AAPL.csv", 10, row -> {
 
             String dateString = row.get("Date");
 
@@ -175,6 +170,13 @@ public class StonkChartDemo extends JPanel {
 
             long volume = Long.valueOf(row.get("Volume"));
 
+            System.out.println(time + " > " +
+                    "open: " + open + ", " +
+                    "high: " + high + ", " +
+                    "low: " + low + ", " +
+                    "close: " + close + ", " +
+                    "volume: " + volume + "");
+
             paintCandle(time, open, high, low, close, volume);
 
         });
@@ -183,7 +185,7 @@ public class StonkChartDemo extends JPanel {
 
 
     public void paintCandle(long time, double open, double high, double low, double close, long volume) {
-        Color color = close > high ? green : red;
+        Color color = close > open ? green : red;
         ohlc.addPoint(new CandleStick(time, open, high, low, close, color));
         vol.addPoint(new VolumeBar(time, volume, color));
     }

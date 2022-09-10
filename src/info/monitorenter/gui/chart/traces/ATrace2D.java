@@ -416,9 +416,9 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
              * loop in AxisAutoUnit!
              */
             this.m_minX = p.getX();
-            this.m_minY = p.getY();
+            this.m_minY = p.getYMin();
             this.m_maxX = p.getX();
-            this.m_maxY = p.getY();
+            this.m_maxY = p.getYMax();
             final Double zero = new Double(0);
             this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, zero, new Double(this.m_minX));
             this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, zero, new Double(this.m_minY));
@@ -585,7 +585,7 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
       // for firing events:
       double oldMaxX = this.m_maxX;
       double oldMinX = this.m_minX;
-      double oldMaxY = this.m_maxX;
+      double oldMaxY = this.m_maxY;
       double oldMinY = this.m_minY;
 
       // go search
@@ -603,13 +603,13 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
           maxXCollect = pointBounds[POINTBOUNDS_MAX_X];
         }
         if (pointBounds[POINTBOUNDS_MAX_Y] > maxYCollect) {
-          maxXCollect = pointBounds[POINTBOUNDS_MAX_Y];
+          maxYCollect = pointBounds[POINTBOUNDS_MAX_Y];
         }
         if (pointBounds[POINTBOUNDS_MIN_X] > minXCollect) {
           minXCollect = pointBounds[POINTBOUNDS_MIN_X];
         }
         if (pointBounds[POINTBOUNDS_MIN_Y] > minYCollect) {
-          minXCollect = pointBounds[POINTBOUNDS_MIN_Y];
+          minYCollect = pointBounds[POINTBOUNDS_MIN_Y];
         }
       }
       this.m_maxX = maxXCollect;
@@ -666,8 +666,8 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
     final double[] result = new double[4];
     double tmpMaxX, collectMaxX = point.getX();
     double tmpMinX, collectMinX = point.getX();
-    double tmpMaxY, collectMaxY = point.getY();
-    double tmpMinY, collectMinY = point.getY();
+    double tmpMaxY, collectMaxY = point.getYMax();
+    double tmpMinY, collectMinY = point.getYMin();
     Chart2D chart = TracePoint2DUtil.getChartFromTracePoint(point);
     if (this.isAdditionalSpaceRequired() && chart.isVisible() && chart.getWidth() > 0) {
 

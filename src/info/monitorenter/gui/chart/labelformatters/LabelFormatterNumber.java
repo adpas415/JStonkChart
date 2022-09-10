@@ -22,6 +22,7 @@
  */
 package info.monitorenter.gui.chart.labelformatters;
 
+import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.IAxisLabelFormatter;
 import info.monitorenter.util.Range;
 
@@ -128,100 +129,13 @@ public class LabelFormatterNumber extends ALabelFormatter implements IAxisLabelF
    */
   @Override
   public int getMaxAmountChars() {
-    // TODO: This does not work for currency format or Percent format: in
-    // general for formatters that incorporate fixed Strings or more than a
-    // fraction digit separator.
 
-    // Test start:
-    int result;
-    // final int maxMaxLength = this.format(this.getAxis().getMax()).length();
-    // final int minMaxLength = this.format(this.getAxis().getMin()).length();
-    // result = Math.max(maxMaxLength, minMaxLength);
-    // // add max fraction digits:
-    // result += this.m_numberFormat.getMaximumFractionDigits();
-    // return result;
-    //
-    // // Test end:
+    IAxis<?> axis = this.getAxis();
+    final String longestLabelVisible = this.format(axis.getMax());
+    final int lengthOfLongestVisible = longestLabelVisible.length();
 
-    // find the fractions by using range information:
-    int fractionDigits = 0;
-    Range range = this.getAxis().getRange();
-    double dRange = range.getExtent();
-    if (dRange < 1) {
-      if (dRange == 0) {
-        fractionDigits = 1;
-      } else {
-        if (dRange == 0) {
-          fractionDigits = 1;
-        } else {
-          // find the power
-          while (dRange < 1) {
-            dRange *= 10;
-            fractionDigits++;
-          }
-        }
-      }
-    } else {
-      if (dRange < 10) {
-        fractionDigits = 2;
-      } else if (dRange < 100) {
-        fractionDigits = 1;
-      } else {
-        fractionDigits = 0;
-      }
-    }
+    return lengthOfLongestVisible+1;
 
-    // find integer digits by using longest value:
-    int integerDigits = 0;
-    double max = range.getMax();
-    double min = Math.abs(range.getMin());
-    if (max == 0 && min == 0) {
-      integerDigits = 1;
-    } else if (max < min) {
-      while (min > 1) {
-        min /= 10;
-        integerDigits++;
-      }
-    } else {
-      while (max > 1) {
-        max /= 10;
-        integerDigits++;
-      }
-    }
-
-    // check if the internal numberformat would cut values and cause endering.
-    // errors:
-    if (integerDigits > this.m_numberFormat.getMaximumIntegerDigits()) {
-      this.m_numberFormat.setMaximumIntegerDigits(integerDigits);
-    }
-    if (fractionDigits > this.m_numberFormat.getMaximumFractionDigits()) {
-      this.m_numberFormat.setMaximumFractionDigits(fractionDigits);
-    }
-
-    // check if the internal numberformat will format bigger numbers than the
-    // computed ones thus causing labels overwriting the y axis or each other
-    // for the x axis:
-
-    int minFractionDigits = this.m_numberFormat.getMinimumFractionDigits();
-    int minIntegerDigits = this.m_numberFormat.getMinimumIntegerDigits();
-    if (minFractionDigits > fractionDigits) {
-      fractionDigits = minFractionDigits;
-    }
-    if (minIntegerDigits > integerDigits) {
-      integerDigits = minFractionDigits;
-    }
-
-    result = integerDigits + fractionDigits;
-    if (min < 0) {
-      // <sign>
-      result += 1;
-    }
-    if (this.m_numberFormat.isGroupingUsed()) {
-      // decimal separators
-      result += range.getMax() / 1000;
-    }
-
-    return result;
   }
 
   /**
