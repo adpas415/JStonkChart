@@ -23,6 +23,7 @@ import info.monitorenter.gui.chart.IPointPainter;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.ITracePoint2D;
 import info.monitorenter.gui.chart.TracePointProviderDefault;
+import info.monitorenter.gui.chart.axis.AxisLinearSkipTimeBlocks;
 import info.monitorenter.gui.util.TracePoint2DUtil;
 
 import java.awt.geom.Point2D;
@@ -122,6 +123,37 @@ public class TracePoint2D extends Point2D.Double implements ITracePoint2D {
 
     this.m_x = xValue;
     this.m_y = yValue;
+  }
+
+  @Override
+  public boolean isVisibleOnAxisX() {
+    boolean result = !this.isDiscontinuation();
+
+    if (result) {
+      if(m_listener == null)
+        return false;
+
+      IAxis xAxis = this.m_listener.getRenderer().getAxisX();
+
+      double
+          max = xAxis.getMax(),
+          min = xAxis.getMin(),
+          myX = this.getX();
+
+      if(xAxis instanceof AxisLinearSkipTimeBlocks) {
+        min = ((AxisLinearSkipTimeBlocks<?>) xAxis).transform(min);
+        max = ((AxisLinearSkipTimeBlocks<?>) xAxis).transform(max);
+        myX = ((AxisLinearSkipTimeBlocks<?>) xAxis).transform(myX);
+      }
+
+      if (myX < min)
+        result = false;
+      else if (myX > max)
+        result = false;
+
+    }
+
+    return result;
   }
 
   /**
@@ -454,7 +486,7 @@ public class TracePoint2D extends Point2D.Double implements ITracePoint2D {
         TracePoint2D.this.m_x = xValue;
         TracePoint2D.this.m_y = yValue;
         if (TracePoint2D.this.m_listener != null) {
-          TracePoint2D.this.m_listener.firePointChanged(TracePoint2D.this, ITracePoint2D.STATE.CHANGED, new java.lang.Double(oldX), new java.lang.Double(oldY));
+          TracePoint2D.this.m_listener.firePointChanged(TracePoint2D.this, ITracePoint2D.STATE.CHANGED, oldX, oldY);
         }
         return null;
       }

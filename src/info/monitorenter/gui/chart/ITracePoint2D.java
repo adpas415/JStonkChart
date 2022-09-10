@@ -34,7 +34,9 @@ import java.util.Set;
  */
 public interface ITracePoint2D extends Comparable<ITracePoint2D>, java.io.Serializable, Cloneable {
 
-  public static enum STATE {
+    boolean isVisibleOnAxisX();
+
+    public static enum STATE {
     /**
      * The state flag used to inform the <code>{@link ITrace2D}</code> listener
      * via

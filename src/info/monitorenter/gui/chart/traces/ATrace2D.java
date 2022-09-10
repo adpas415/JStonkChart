@@ -257,7 +257,7 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
   /**
    * The zIndex property.
    */
-  private Integer m_zIndex = Integer.valueOf(ITrace2D.Z_INDEX_MIN + ATrace2D.instanceCount);
+  private Integer m_zIndex = ITrace2D.Z_INDEX_MIN + ATrace2D.instanceCount;
 
   /**
    * Defcon.
@@ -419,11 +419,11 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
             this.m_minY = p.getYMin();
             this.m_maxX = p.getX();
             this.m_maxY = p.getYMax();
-            final Double zero = new Double(0);
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, zero, new Double(this.m_minX));
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, zero, new Double(this.m_minY));
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, zero, new Double(this.m_maxX));
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, zero, new Double(this.m_maxY));
+            final Double zero = (double) 0;
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, zero, this.m_minX);
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, zero, this.m_minY);
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, zero, this.m_maxX);
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, zero, this.m_maxY);
 
             this.m_firsttime = false;
           }
@@ -619,16 +619,16 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
 
       // fire events:
       if (oldMaxX < this.m_maxX) {
-        this.firePropertyChange(PROPERTY_MAX_X, Double.valueOf(oldMaxX), Double.valueOf(this.m_maxX));
+        this.firePropertyChange(PROPERTY_MAX_X, oldMaxX, this.m_maxX);
       }
       if (oldMaxY < this.m_maxY) {
-        this.firePropertyChange(PROPERTY_MAX_Y, Double.valueOf(oldMaxY), Double.valueOf(this.m_maxY));
+        this.firePropertyChange(PROPERTY_MAX_Y, oldMaxY, this.m_maxY);
       }
       if (oldMinX > this.m_minX) {
-        this.firePropertyChange(PROPERTY_MIN_X, Double.valueOf(oldMinX), Double.valueOf(this.m_minX));
+        this.firePropertyChange(PROPERTY_MIN_X, oldMinX, this.m_minX);
       }
       if (oldMinY > this.m_minY) {
-        this.firePropertyChange(PROPERTY_MIN_Y, Double.valueOf(oldMinY), Double.valueOf(this.m_minY));
+        this.firePropertyChange(PROPERTY_MIN_Y, oldMinY, this.m_minY);
       }
     }
   }
@@ -1190,41 +1190,41 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
           // add
           if ((collectMaxX > this.m_maxX)) {
             this.m_maxX = collectMaxX;
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, null, new Double(this.m_maxX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, null, this.m_maxX);
           }
           if ((collectMinX < this.m_minX)) {
             this.m_minX = collectMinX;
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, null, new Double(this.m_minX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, null, this.m_minX);
           }
           if ((collectMaxY > this.m_maxY)) {
             this.m_maxY = collectMaxY;
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, null, new Double(this.m_maxY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, null, this.m_maxY);
           }
           if ((collectMinY < this.m_minY)) {
             this.m_minY = collectMinY;
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, null, new Double(this.m_minY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, null, this.m_minY);
           }
         } else if (ITracePoint2D.STATE.REMOVED == state) {
           // removal: care for extrema (<=, >=)
           if ((collectMaxX >= this.m_maxX)) {
             collectMaxX = this.m_maxX;
             this.m_maxX = this.maxXSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, new Double(collectMaxX), new Double(this.m_maxX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, collectMaxX, this.m_maxX);
           }
           if ((collectMinX <= this.m_minX)) {
             collectMinX = this.m_minX;
             this.m_minX = this.minXSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, new Double(collectMinX), new Double(this.m_minX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, collectMinX, this.m_minX);
           }
           if ((collectMaxY >= this.m_maxY)) {
             collectMaxY = this.m_maxY;
             this.m_maxY = this.maxYSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, new Double(collectMaxY), new Double(this.m_maxY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, collectMaxY, this.m_maxY);
           }
           if ((collectMinY <= this.m_minY)) {
             collectMinY = this.m_minY;
             this.m_minY = this.minYSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, new Double(collectMinY), new Double(this.m_minY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, collectMinY, this.m_minY);
           }
           /*
            * Was this the last point?
@@ -1242,12 +1242,12 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
               // the point was maximum: expensive re-search of new maximum
               final double oldMaxX = this.m_maxX;
               this.m_maxX = this.maxXSearch();
-              this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, new Double(oldMaxX), new Double(this.m_maxX));
+              this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, oldMaxX, this.m_maxX);
             }
           } else if (collectMaxX > this.m_maxX) {
             final double oldMaxX = this.m_maxX;
             this.m_maxX = collectMaxX;
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, new Double(oldMaxX), new Double(this.m_maxX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, oldMaxX, this.m_maxX);
           }
           // did we decrease bounds?
           if (collectMinX > this.m_minX) {
@@ -1255,12 +1255,12 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
               // the point was minimum: expensive re-search of new minimum
               final double oldMinX = this.m_minX;
               this.m_minX = this.minXSearch();
-              this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, new Double(oldMinX), new Double(this.m_minX));
+              this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, oldMinX, this.m_minX);
             }
           } else if (collectMinX < this.m_minX) {
             final double oldMinX = this.m_minX;
             this.m_minX = collectMinX;
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, new Double(oldMinX), new Double(this.m_minX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, oldMinX, this.m_minX);
           }
           // did we decrease bounds?
           if (collectMaxY < this.m_maxY) {
@@ -1268,12 +1268,12 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
               // the point was maximum: expensive re-search of new maximum
               final double oldMaxY = this.m_maxY;
               this.m_maxY = this.maxYSearch();
-              this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, new Double(oldMaxY), new Double(this.m_maxY));
+              this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, oldMaxY, this.m_maxY);
             }
           } else if (collectMaxY > this.m_maxY) {
             final double oldMaxY = this.m_maxY;
             this.m_maxY = collectMaxY;
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, new Double(oldMaxY), new Double(this.m_maxY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, oldMaxY, this.m_maxY);
           }
           // did we decrease bounds?
           if (collectMinY > this.m_minY) {
@@ -1281,12 +1281,12 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
               // the point was minimum: expensive re-search of new minimum
               final double oldMinY = this.m_minY;
               this.m_minY = this.minYSearch();
-              this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, new Double(oldMinY), new Double(this.m_minY));
+              this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, oldMinY, this.m_minY);
             }
           } else if (collectMinY < this.m_minY) {
             final double oldMinY = this.m_minY;
             this.m_minY = collectMinY;
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, new Double(oldMinY), new Double(this.m_minY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, oldMinY, this.m_minY);
           }
           this.firePropertyChange(ITrace2D.PROPERTY_TRACEPOINT_CHANGED_LOCATION, null, changed);
         } else if (state == ITracePoint2D.STATE.ADDITIONAL_POINT_PAINTER_ADDED) {
@@ -1613,6 +1613,56 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
       //do nothing, this often errs while updating
     }
     return  result;
+  }
+
+  @Override
+  synchronized public double maxYVisible() {
+
+    if (Chart2D.DEBUG_THREADING) {
+      System.out.println("trace.maxYSearch, 0 locks");
+    }
+
+    synchronized (this) {
+      if (Chart2D.DEBUG_THREADING) {
+        System.out.println("trace.maxYSearch, 1 lock");
+      }
+
+      double ret = Double.NaN;
+      ITracePoint2D tmpoint = null;
+      final Iterator<ITracePoint2D> it = this.iterator();
+      while (it.hasNext()) {
+        tmpoint = it.next();
+        if(tmpoint.isVisibleOnAxisX()) {
+          ret = Double.isNaN(ret) ? tmpoint.getYMax() : Math.max(ret, tmpoint.getYMax());
+        }
+      }
+      return ret;
+    }
+  }
+
+  @Override
+  synchronized public double minYVisible() {
+
+    if (Chart2D.DEBUG_THREADING) {
+      System.out.println("trace.minYSearch, 0 locks");
+    }
+
+    synchronized (this) {
+      if (Chart2D.DEBUG_THREADING) {
+        System.out.println("trace.minYSearch, 1 locks");
+      }
+
+      double ret = Double.NaN;
+      ITracePoint2D tmpoint = null;
+      final Iterator<ITracePoint2D> it = this.iterator();
+      while (it.hasNext()) {
+        tmpoint = it.next();
+        if(tmpoint.isVisibleOnAxisX()) {
+          ret = Double.isNaN(ret) ? tmpoint.getYMin() : Math.min(ret, tmpoint.getYMin());
+        }
+      }
+      return ret;
+    }
   }
 
   /**
@@ -1976,16 +2026,16 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
         // property changes:
         double oldValue = this.m_maxX;
         this.m_maxX = 0;
-        this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, new Double(oldValue), new Double(this.m_maxX));
+        this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, oldValue, this.m_maxX);
         oldValue = this.m_maxY;
         this.m_maxY = 0;
-        this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, new Double(oldValue), new Double(this.m_maxY));
+        this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, oldValue, this.m_maxY);
         oldValue = this.m_minX;
         this.m_minX = 0;
-        this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, new Double(oldValue), new Double(this.m_minX));
+        this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, oldValue, this.m_minX);
         oldValue = this.m_minY;
         this.m_minY = 0;
-        this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, new Double(oldValue), new Double(this.m_minY));
+        this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, oldValue, this.m_minY);
 
         // inform computing traces:
         for (final ITrace2D trace : this.m_computingTraces) {
@@ -2086,20 +2136,20 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
           if (tmpx >= this.m_maxX) {
             tmpx = this.m_maxX;
             this.m_maxX = this.maxXSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, new Double(tmpx), new Double(this.m_maxX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_X, tmpx, this.m_maxX);
           } else if (tmpx <= this.m_minX) {
             tmpx = this.m_minX;
             this.m_minX = this.minXSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, new Double(tmpx), new Double(this.m_minX));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_X, tmpx, this.m_minX);
           }
           if (tmpy >= this.m_maxY) {
             tmpy = this.m_maxY;
             this.m_maxY = this.maxYSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, new Double(tmpy), new Double(this.m_maxY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MAX_Y, tmpy, this.m_maxY);
           } else if (tmpy <= this.m_minY) {
             tmpy = this.m_minY;
             this.m_minY = this.minYSearch();
-            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, new Double(tmpy), new Double(this.m_minY));
+            this.firePropertyChange(ITrace2D.PROPERTY_MIN_Y, tmpy, this.m_minY);
           }
 
           this.firePointRemoved(removed);
@@ -2410,7 +2460,7 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
     final boolean oldValue = this.m_visible;
     this.m_visible = visible;
     if (oldValue != this.m_visible) {
-      this.firePropertyChange(ITrace2D.PROPERTY_VISIBLE, Boolean.valueOf(oldValue), Boolean.valueOf(this.m_visible));
+      this.firePropertyChange(ITrace2D.PROPERTY_VISIBLE, oldValue, this.m_visible);
     }
   }
 
@@ -2434,7 +2484,7 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
           if (Chart2D.DEBUG_THREADING) {
             System.out.println("trace.setZIndex, 2 locks");
           }
-          this.m_zIndex = Integer.valueOf(zIndex.intValue());
+          this.m_zIndex = zIndex.intValue();
           this.firePropertyChange(ITrace2D.PROPERTY_ZINDEX, oldValue, this.m_zIndex);
         }
       }

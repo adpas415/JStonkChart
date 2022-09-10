@@ -254,6 +254,16 @@ public class Trace2DAxisSwap implements ITrace2D, Comparable<ITrace2D> {
     return this.m_delegate.getNearestPointX(x);
   }
 
+  @Override
+  public double maxYVisible() {
+    return this.m_delegate.maxYVisible();
+  }
+
+  @Override
+  public double minYVisible() {
+    return this.m_delegate.minYVisible();
+  }
+
   /**
    * @see info.monitorenter.gui.chart.ITrace2D#getPhysicalUnits()
    */
