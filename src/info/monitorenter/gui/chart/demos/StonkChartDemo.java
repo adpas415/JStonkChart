@@ -17,11 +17,19 @@ import info.monitorenter.gui.chart.traces.Trace2DPoints;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class StonkChartDemo {
 
@@ -38,15 +46,65 @@ public class StonkChartDemo {
         vol  = new Trace2DPoints(new Trace2DSimple(), new PointPainterSimpleStick());
 
     {
+
         decorate(price);
         decorate(volume);
         yAxisPrice(price);
         yAxisVolume(volume);
         xAxisTime(volume);
         setupToPaintCandles();
+
     }
 
-    {
+    private void importCSV(String resourcePath, Consumer<Map<String, String>> rowConsumer) {
+
+        String csv_pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
+
+        InputStream resourceAsStream = getClass().getResourceAsStream(resourcePath);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream))) {
+
+            LinkedList<String> headers = new LinkedList<>();
+
+            int lineNum = 0;
+            String line;
+            while ((line = reader.readLine()) != null) {
+
+                try {
+
+                    lineNum++;
+                    String[] contents = line.split(csv_pattern);
+
+                    //consume first row as headers
+                    if(headers.isEmpty()) {
+
+                        for(String header : contents)
+                            headers.add(header);
+
+                    } else {
+
+                        if(contents.length != headers.size())
+                            throw new Exception("Column Count Mismatch on Line #"+lineNum);
+
+                        Map<String, String> row = new LinkedHashMap<>();
+                        for(int column = 0; column < headers.size(); column++)
+                            row.put(headers.get(column), contents[column]);
+
+                        rowConsumer.accept(row);
+
+                    }
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
 
         //todo: import an actual Intraday 1-min bar dataset, perhaps two or three days and we'll demonstrate skipping time blocks.
         ZonedDateTime barTime = ZonedDateTime.of(LocalDate.of(1989, 7, 17), LocalTime.of(14, 30), ZoneId.of("America/New_York"));
@@ -56,6 +114,33 @@ public class StonkChartDemo {
 
     }
 
+    private void populateChart() {
+
+        String demoFile = "/info/monitorenter/gui/chart/demos/AAPL.csv";
+
+        //Date,Low,Open,Volume,High,Close,Adjusted Close
+        importCSV( demoFile, row -> {
+
+            String dateString = row.get("Date");
+
+            long time = ZonedDateTime.of(LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd-MM-yyyy")), LocalTime.MIDNIGHT, ZoneId.of("America/New_York")).toInstant().toEpochMilli();
+
+            double
+                open   =  Double.valueOf(row.get("Open")),
+                high   =  Double.valueOf(row.get("High")),
+                low    =  Double.valueOf(row.get("Low")),
+                close  =  Double.valueOf(row.get("Close"));
+
+            long volume = Long.valueOf(row.get("Volume"));
+
+            Color color = close > high ? green : red;
+
+            ohlc.addPoint(new CandleStick(time, open, high, low, close, color));
+            vol.addPoint(new SimpleStick(time, 0, volume, color));
+
+        });
+
+    }
 
 
     public void paintCandle(long time, double open, double high, double low, double close, long volume) {
