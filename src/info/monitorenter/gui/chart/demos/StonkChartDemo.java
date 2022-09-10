@@ -16,7 +16,10 @@ import info.monitorenter.gui.chart.tracepoints.SimpleStick;
 import info.monitorenter.gui.chart.traces.Trace2DPoints;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,7 +34,34 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class StonkChartDemo {
+public class StonkChartDemo extends JPanel {
+
+
+    public static void main(String[] args) {
+
+        StonkChartDemo stonkChartDemo = new StonkChartDemo();
+
+        // Make it visible:
+        // Create a frame.
+        JFrame frame = new JFrame("StaticChartFill");
+        // add the chart to the frame:
+        frame.getContentPane().add(stonkChartDemo);
+        frame.setSize(400, 300);
+        // Enable the termination button [cross on the upper right edge]:
+        frame.addWindowListener(new WindowAdapter() {
+            /**
+             * @see java.awt.event.WindowAdapter#windowClosing(java.awt.event.WindowEvent)
+             */
+            @Override
+            public void windowClosing(final WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        frame.setVisible(true);
+
+    }
+
+
 
     final Color
         green  =  Color.decode("#28A49C"),
@@ -54,9 +84,12 @@ public class StonkChartDemo {
         xAxisTime(volume);
         setupToPaintCandles();
 
+        setLayout(new BorderLayout());
+        add(chartStack);
+
     }
 
-    private void importCSV(String resourcePath, Consumer<Map<String, String>> rowConsumer) {
+    private void importCSV(String resourcePath, Consumer<Map<String, String>> rowConsumer) throws Exception {
 
         String csv_pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)";
 
@@ -95,26 +128,18 @@ public class StonkChartDemo {
                     }
 
                 } catch (Exception ex) {
-                    ex.printStackTrace();
+                    throw ex;
                 }
 
             }
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            throw ex;
         }
-
-
-
-        //todo: import an actual Intraday 1-min bar dataset, perhaps two or three days and we'll demonstrate skipping time blocks.
-        ZonedDateTime barTime = ZonedDateTime.of(LocalDate.of(1989, 7, 17), LocalTime.of(14, 30), ZoneId.of("America/New_York"));
-
-        paintCandle(barTime.toInstant().toEpochMilli(), 1, 2, 0.50, 1.50, 500);
-        barTime = barTime.plusMinutes(1);
 
     }
 
-    private void populateChart() {
+    private void populateChart() throws Exception {
 
         String demoFile = "/info/monitorenter/gui/chart/demos/AAPL.csv";
 
