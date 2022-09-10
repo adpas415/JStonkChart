@@ -1646,9 +1646,9 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
     }
 
     // 3) Find the maximum result:
-    result = Math.max(maxAxisYHeight, axesXTopHeight);
+    result = axesXTopHeight;//Math.max(maxAxisYHeight, axesXTopHeight);
     // ensure minimum offset when no axes are visible
-    return result > 0 ? result : 20;
+    return result > 0 ? result : 0;
   }
 
   /**
@@ -1684,7 +1684,7 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
     }
     if (result == this.getSize().getHeight()) {
       // ensure minimum offset when no axis are visible
-      result -= 20;
+      result -= 0;//20
     }
     return result;
 
