@@ -356,6 +356,35 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
         return chart.getNearestPointManhattan(mouseEventX, mouseEventY);
       }
 
+    },
+    XAXIS {
+
+      ITracePoint2D getNearestXPoint(Chart2D chart, final int mouseEventX) {
+        ITracePoint2D result = null;
+        Set<ITrace2D> traces = chart.getTraces();
+        IAxis xAxis = chart.getAxisX();
+        DistancePoint distanceBean;
+        DistancePoint winner = null;
+        for (ITrace2D trace : traces) {
+          //todo: why does this get out of alignment when we're zoomed out???
+          distanceBean = trace.getNearestPointX(xAxis.translatePxToValue(mouseEventX));
+          if (winner == null || (distanceBean.getPoint() != null && distanceBean.getDistance() < winner.getDistance())) {
+            winner = distanceBean;
+          }
+
+        }
+
+        if (winner != null) {
+          result = winner.getPoint();
+        }
+
+        return result;
+      }
+
+
+      public ITracePoint2D getNearestPoint(final int mouseEventX, final int mouseEventY, final Chart2D chart) {
+        return getNearestXPoint(chart, mouseEventX);
+      }
     };
 
     /**

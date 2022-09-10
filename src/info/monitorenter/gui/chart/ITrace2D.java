@@ -876,6 +876,8 @@ public interface ITrace2D extends PropertyChangeListener, Comparable<ITrace2D>, 
    */
   public DistancePoint getNearestPointManhattan(double x, double y);
 
+  DistancePoint getNearestPointX(double x);
+
   /**
    * Returns the concatenation <code>[x: "{@link #getPhysicalUnitsX()}", y: "
    * {@link #getPhysicalUnitsY()}"]</code>.

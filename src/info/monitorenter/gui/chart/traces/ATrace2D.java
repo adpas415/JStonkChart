@@ -1592,6 +1592,29 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
     return result;
   }
 
+  public DistancePoint getNearestPointX(double mouseX) {
+    final DistancePoint result = new DistancePoint();
+
+    try {
+      final Iterator<ITracePoint2D> it = this.iterator();
+      ITracePoint2D point;
+
+      double shortestDistance = Double.MAX_VALUE;
+      while (it.hasNext()) {
+        point = it.next();
+        double xDistance = Math.abs(mouseX - point.getX());
+        if (xDistance < shortestDistance) {
+          shortestDistance = xDistance;
+          result.setPoint(point);
+          result.setDistance(shortestDistance);
+        }
+      }
+    } catch (Exception ex) {
+      //do nothing, this often errs while updating
+    }
+    return  result;
+  }
+
   /**
    * @see info.monitorenter.gui.chart.ITrace2D#getPhysicalUnits()
    */

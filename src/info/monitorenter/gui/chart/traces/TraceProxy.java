@@ -278,6 +278,11 @@ public class TraceProxy implements ITrace2D {
     return this.m_delegate.getNearestPointManhattan(x, y);
   }
 
+  @Override
+  public DistancePoint getNearestPointX(double x) {
+    return this.m_delegate.getNearestPointX(x);
+  }
+
   /**
    * @see info.monitorenter.gui.chart.ITrace2D#getPhysicalUnits()
    */

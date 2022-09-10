@@ -249,6 +249,11 @@ public class Trace2DAxisSwap implements ITrace2D, Comparable<ITrace2D> {
     return this.m_delegate.getNearestPointManhattan(x, y);
   }
 
+  @Override
+  public DistancePoint getNearestPointX(double x) {
+    return this.m_delegate.getNearestPointX(x);
+  }
+
   /**
    * @see info.monitorenter.gui.chart.ITrace2D#getPhysicalUnits()
    */
