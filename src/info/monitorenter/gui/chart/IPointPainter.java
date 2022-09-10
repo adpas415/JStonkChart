@@ -211,6 +211,4 @@ public interface IPointPainter<T extends IPointPainter<T>> extends Serializable,
    */
   public void startPaintIteration(Graphics g2d);
 
-  void setTrace(ITrace2D enrichedTrace);
-
 }

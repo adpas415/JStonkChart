@@ -1,6 +1,7 @@
 package info.monitorenter.gui.chart.traces;
 
 import info.monitorenter.gui.chart.*;
+import info.monitorenter.gui.chart.pointpainters.APointPainter;
 import info.monitorenter.gui.chart.traces.painters.TracePainterConfigurable;
 
 import java.awt.*;
@@ -37,7 +38,7 @@ public class Trace2DPoints implements ITrace2D {
    *          impl that will deal with the basic trace functionality.
    *
    */
-  public Trace2DPoints(final ITrace2D delegateThatIsEnrichedByTagPainting, IPointPainter pointPainter) {
+  public Trace2DPoints(final ITrace2D delegateThatIsEnrichedByTagPainting, APointPainter pointPainter) {
     assert (delegateThatIsEnrichedByTagPainting != null) : " Do not pass null";
     this.m_delegate = delegateThatIsEnrichedByTagPainting;
     /*

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+//todo: do we need ChartStack at all?
 public class ChartStack extends JPanel {
         
     public Queue<Chart2D> charts = new ConcurrentLinkedQueue();
@@ -71,7 +72,7 @@ public class ChartStack extends JPanel {
         
         Chart2D firstChart = iter.next();
         
-        firstChart.clearSynchronizations();
+        //firstChart.clearSynchronizations();
         firstChart.getAxisX().setVisible(true);
         
         Chart2D prevChart;
@@ -80,11 +81,11 @@ public class ChartStack extends JPanel {
             prevChart = firstChart;
             while(iter.hasNext()) {
                 Chart2D nextChart = iter.next();
-                nextChart.clearSynchronizations();
+                //nextChart.clearSynchronizations();
                 //-
                 if(nextChart.isVisible()) {
                     firstChart.setSynchronizedXStartChart(nextChart);
-                    firstChart.syncAxisX(nextChart);
+                    //firstChart.syncAxisX(nextChart);
                     //-
                     prevChart.getAxisX().setVisible(false);
                     nextChart.getAxisX().setVisible(true);
@@ -129,7 +130,7 @@ public class ChartStack extends JPanel {
                     Thread.sleep(50);
                 } catch (InterruptedException ignored) {
                 } finally {
-                    f.updateZoomForSyncCharts();
+                    //f.updateZoomForSyncCharts();
                     if(getParent() != null)
                         getParent().repaint();
                 }

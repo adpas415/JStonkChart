@@ -70,7 +70,6 @@ public abstract class APointPainter<T extends IPointPainterConfigurableUI<T>> im
   }
 
   ITrace2D trace2D;
-  @Override
   public void setTrace(ITrace2D enrichedTrace) {
     this.trace2D = enrichedTrace;
   }

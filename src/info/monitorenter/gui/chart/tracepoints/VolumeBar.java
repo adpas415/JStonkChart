@@ -49,7 +49,7 @@ import java.awt.*;
  * @author <a href="mailto:Achim.Westermann@gmx.de">Achim Westermann </a>
  * 
  */
-public class SimpleStick extends TracePoint2D {
+public class VolumeBar extends TracePoint2D {
 
   /**
    * Constructor with every argument needed.
@@ -75,12 +75,12 @@ public class SimpleStick extends TracePoint2D {
    *          the low y value.
    */
     
-  public SimpleStick(final double xValue, final double startY, final double endY, final Color color) {
-      this(xValue, startY, endY);
+  public VolumeBar(final double xValue, final double heightY, final Color color) {
+      this(xValue, 0, heightY);
       this.m_color = color;
   }
     
-  public SimpleStick(final double xValue, final double startY, final double endY) {
+  public VolumeBar(final double xValue, final double startY, final double endY) {
     super(xValue, startY);
     this.m_color = Color.white;
     this.m_high = endY;

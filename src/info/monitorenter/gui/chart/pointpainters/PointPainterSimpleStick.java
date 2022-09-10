@@ -6,7 +6,7 @@ import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.ITracePoint2D;
 import info.monitorenter.gui.chart.axis.AxisLinearSkipTimeBlocks;
 import info.monitorenter.gui.chart.axis.TimeBlock;
-import info.monitorenter.gui.chart.tracepoints.SimpleStick;
+import info.monitorenter.gui.chart.tracepoints.VolumeBar;
 import info.monitorenter.gui.chart.traces.ATrace2D;
 
 import java.awt.*;
@@ -143,13 +143,13 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
         /*
          * Normalize y
          */
-        if(original.getClass() == SimpleStick.class) {
-            SimpleStick volumeStick = (SimpleStick) original;
+        if(original.getClass() == VolumeBar.class) {
+            VolumeBar volumeBar = (VolumeBar) original;
             double traceMaxY = chart.getAxisY().getMax();
             double traceMinY = chart.getAxisY().getMin();
             double scalerY = traceMaxY - traceMinY;
-            double highYNormalized = (volumeStick.getHigh() - traceMinY) / scalerY;
-            double lowYNormalized = (volumeStick.y - traceMinY) / scalerY;
+            double highYNormalized = (volumeBar.getHigh() - traceMinY) / scalerY;
+            double lowYNormalized = (volumeBar.y - traceMinY) / scalerY;
             /*
              * Transform to px
              */
@@ -160,7 +160,7 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
             double lowYPx = yChartStartPx - (int) Math.round(lowYNormalized * rangeYPx);
 
 
-            Color candleStickColor = volumeStick.getColor();
+            Color candleStickColor = volumeBar.getColor();
 
             //color the candlestick
             g.setColor(candleStickColor);

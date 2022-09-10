@@ -1,6 +1,7 @@
 package info.monitorenter.gui.chart.demos;
 
 import info.monitorenter.gui.chart.Chart2D;
+import info.monitorenter.gui.chart.ChartStack;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyPrice;
@@ -12,7 +13,7 @@ import info.monitorenter.gui.chart.labelformatters.formats.TradingVolumeFormat;
 import info.monitorenter.gui.chart.pointpainters.PointPainterCandleStick;
 import info.monitorenter.gui.chart.pointpainters.PointPainterSimpleStick;
 import info.monitorenter.gui.chart.tracepoints.CandleStick;
-import info.monitorenter.gui.chart.tracepoints.SimpleStick;
+import info.monitorenter.gui.chart.tracepoints.VolumeBar;
 import info.monitorenter.gui.chart.traces.Trace2DPoints;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
 
@@ -23,12 +24,9 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -39,13 +37,11 @@ public class StonkChartDemo extends JPanel {
 
     public static void main(String[] args) {
 
-        StonkChartDemo stonkChartDemo = new StonkChartDemo();
-
         // Make it visible:
         // Create a frame.
-        JFrame frame = new JFrame("StaticChartFill");
+        JFrame frame = new JFrame("StonkChartDemo");
         // add the chart to the frame:
-        frame.getContentPane().add(stonkChartDemo);
+        frame.getContentPane().add(new StonkChartDemo());
         frame.setSize(400, 300);
         // Enable the termination button [cross on the upper right edge]:
         frame.addWindowListener(new WindowAdapter() {
@@ -77,15 +73,36 @@ public class StonkChartDemo extends JPanel {
 
     {
 
-        decorate(price);
-        decorate(volume);
+        price.addTrace(ohlc);
+        ohlc.setName("OHLC");
+        ohlc.setZIndex(1);
+
+        volume.addTrace(vol);
+        vol.setName("VOLUME");
+        vol.setZIndex(1);
+
+        decorateChart(price);
+        decorateChart(volume);
         yAxisPrice(price);
         yAxisVolume(volume);
         xAxisTime(volume);
-        setupToPaintCandles();
+
+        ChartStack chartStack = new ChartStack(Color.black, 6);
+        chartStack.addChart(price);
+        chartStack.addChart(volume);
+        chartStack.refreshStackSync();
 
         setLayout(new BorderLayout());
         add(chartStack);
+
+        try {
+
+            populateChart();
+
+        } catch (Exception ex) {
+            System.out.println("Failed to Populate Chart!");
+            ex.printStackTrace();
+        }
 
     }
 
@@ -158,10 +175,7 @@ public class StonkChartDemo extends JPanel {
 
             long volume = Long.valueOf(row.get("Volume"));
 
-            Color color = close > high ? green : red;
-
-            ohlc.addPoint(new CandleStick(time, open, high, low, close, color));
-            vol.addPoint(new SimpleStick(time, 0, volume, color));
+            paintCandle(time, open, high, low, close, volume);
 
         });
 
@@ -171,10 +185,10 @@ public class StonkChartDemo extends JPanel {
     public void paintCandle(long time, double open, double high, double low, double close, long volume) {
         Color color = close > high ? green : red;
         ohlc.addPoint(new CandleStick(time, open, high, low, close, color));
-        vol.addPoint(new SimpleStick(time, 0, volume, color));
+        vol.addPoint(new VolumeBar(time, volume, color));
     }
 
-    private static void decorate(Chart2D chart) {
+    private static void decorateChart(Chart2D chart) {
         //chart.setFocusable(true);
         chart.setOpaque(true);
         chart.setPaintLabels(false);
@@ -185,6 +199,9 @@ public class StonkChartDemo extends JPanel {
         chart.setMinimumSize(new Dimension(100,75));
         chart.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         chart.setToolTipType(Chart2D.ToolTipType.VALUE_SNAP_TO_TRACEPOINTS);
+
+        chart.getAxisX().setAxisTitle(new IAxis.AxisTitle(""));
+        chart.getAxisY().setAxisTitle(new IAxis.AxisTitle(""));
     }
 
     private static void yAxisPrice(Chart2D chart) {
@@ -221,17 +238,5 @@ public class StonkChartDemo extends JPanel {
 
     }
 
-    private void setupToPaintCandles() {
-
-        ohlc.setName("OHLC");
-        vol.setName("VOLUME");
-
-        price.addTrace(ohlc);
-        ohlc.setZIndex(1);
-
-        volume.addTrace(vol);
-        vol.setZIndex(1);
-
-    }
 
 }
