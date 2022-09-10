@@ -978,15 +978,20 @@ public abstract class AAxis<T extends IAxisScalePolicy> implements IAxis<T>, Pro
      */
     @Override
     public final int getWidth(final Graphics2D g2d) {
-      int rightSideOverhang = 0;
+      int result = 0;
       if (AAxis.this.isPaintScale()) {
         final FontMetrics fontdim = g2d.getFontMetrics();
-        // only the space required for the right side label:
-        final int fontwidth = fontdim.charWidth('0');
-        final int maxChars = AAxis.this.getFormatter().getMaxAmountChars();
-        rightSideOverhang = maxChars * fontwidth;
+        // the width of the font:
+        final int fontWidth = fontdim.charWidth('0');
+        // times the maximum amount of chars:
+        result = fontWidth * AAxis.this.getFormatter().getMaxAmountChars();
+        // and the height of a major tick mark:
+        result += this.getChart().getAxisTickPainter().getMajorTickLength();
+
       }
-      return rightSideOverhang;
+      // and the Width of the axis title:
+      result += AAxis.this.getAxisTitle().getTitlePainter().getWidth(AAxis.this, g2d);
+      return result;
     }
 
     /**
