@@ -46,6 +46,9 @@ public class LabeledValue implements Serializable {
   /** The corresponding value scaled to a position between 0.0 and 1.0. */
   protected double m_value;
 
+  /** Indicates if this label will end or begin at the designated X coordinate. */
+  protected boolean leftSide = false;
+
   /**
    * Internal defcon.
    * <p>
@@ -153,5 +156,13 @@ public class LabeledValue implements Serializable {
   @Override
   public String toString() {
     return new StringBuffer().append(this.m_label).append(" : ").append(this.m_value).toString();
+  }
+
+  public boolean getLeft() {
+    return leftSide;
+  }
+
+  public void setLeft(boolean value) {
+    this.leftSide = value;
   }
 }

@@ -25,6 +25,7 @@ package info.monitorenter.gui.chart.pointpainters;
 
 import info.monitorenter.gui.chart.IPointPainter;
 import info.monitorenter.gui.chart.IPointPainterConfigurableUI;
+import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.util.ColorMutable;
 
 import java.awt.Color;
@@ -66,6 +67,12 @@ public abstract class APointPainter<T extends IPointPainterConfigurableUI<T>> im
    */
   public APointPainter() {
     // nop
+  }
+
+  ITrace2D trace2D;
+  @Override
+  public void setTrace(ITrace2D enrichedTrace) {
+    this.trace2D = enrichedTrace;
   }
 
   /**

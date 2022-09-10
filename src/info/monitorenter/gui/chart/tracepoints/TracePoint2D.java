@@ -338,6 +338,16 @@ public class TracePoint2D extends Point2D.Double implements ITracePoint2D {
     return this.m_y;
   }
 
+  @Override
+  public double getYMax() {
+    return getY();
+  }
+
+  @Override
+  public double getYMin() {
+    return getY();
+  }
+
   /**
    * @see java.awt.geom.Point2D#hashCode()
    */

@@ -331,4 +331,8 @@ public interface ITracePoint2D extends Comparable<ITracePoint2D>, java.io.Serial
    */
   public abstract void setScaledY(final double scaledY);
 
+  //used for dynamic re-ranging of points with High And Low Y values
+  double getYMax();
+  double getYMin();
+
 }

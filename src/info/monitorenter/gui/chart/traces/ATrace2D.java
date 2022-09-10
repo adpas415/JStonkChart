@@ -362,6 +362,9 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
     return this.addPoint(p, this);
   }
 
+  ITracePoint2D previousPointAdded;
+  public double x_minDistanceBetweenPoints = Double.MAX_VALUE;
+
   /**
    * Do not call this unless you know what it does. This is a hook for
    * {@link ITrace2D} implementations that decorate other implementations and
@@ -424,6 +427,23 @@ public abstract class ATrace2D implements ITrace2D, ITrace2DDataAccumulating, Co
 
             this.m_firsttime = false;
           }
+
+          if (accepted) {
+
+            if (previousPointAdded != null) {
+
+              double distanceFromPreviousPointAdded = Math.abs(p.getX() - previousPointAdded.getX());
+
+              if (distanceFromPreviousPointAdded > 0d && distanceFromPreviousPointAdded < x_minDistanceBetweenPoints)
+                x_minDistanceBetweenPoints = distanceFromPreviousPointAdded;
+
+            }
+
+            previousPointAdded = p;
+
+          }
+
+
           this.firePointAdded(p);
           // inform computing traces:
           if (this.m_computingTraces.size() > 0) {
