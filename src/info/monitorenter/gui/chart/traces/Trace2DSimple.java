@@ -137,4 +137,8 @@ public class Trace2DSimple extends ATrace2D implements ITrace2D {
     return result;
   }
 
+  public LinkedList<ITracePoint2D> copyPointList() {
+    return new LinkedList<>(m_points);
+  }
+
 }
