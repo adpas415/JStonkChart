@@ -20,6 +20,7 @@ import info.monitorenter.gui.chart.axis.AAxis;
 import info.monitorenter.gui.chart.axis.AxisLinear;
 import info.monitorenter.gui.chart.axistickpainters.AxisTickPainterDefault;
 import info.monitorenter.gui.chart.events.Chart2DActionPrintSingleton;
+import info.monitorenter.gui.chart.tracepoints.BackgroundColor;
 import info.monitorenter.gui.util.TracePoint2DUtil;
 import info.monitorenter.util.IStopWatch;
 import info.monitorenter.util.Range;
@@ -3145,10 +3146,10 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
               /**
                * Oldpoint was null before call to interpolate: First iteration.
                */
-              if (oldpoint != newpoint) {
+              //if (oldpoint != newpoint) {
                 // don't use error bars for interpolated points!
-                this.paintPoint(oldtmpx, oldtmpy, tmpx, tmpy, true, trace, g, oldpoint, false, rangex, rangey);
-              }
+              this.paintPoint(oldtmpx, oldtmpy, tmpx, tmpy, true, trace, g, oldpoint, false, rangex, rangey);
+              //}
             } else if (!newpointVisible && oldpointVisible) {
               // leaving the visible bounds:
               tmppt = (ITracePoint2D) newpoint.clone();

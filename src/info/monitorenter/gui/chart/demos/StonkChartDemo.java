@@ -12,10 +12,12 @@ import info.monitorenter.gui.chart.labelformatters.formats.PriceFormat;
 import info.monitorenter.gui.chart.labelformatters.formats.TradingVolumeFormat;
 import info.monitorenter.gui.chart.pointpainters.PointPainterCandleStick;
 import info.monitorenter.gui.chart.pointpainters.PointPainterSimpleStick;
+import info.monitorenter.gui.chart.tracepoints.BackgroundColor;
 import info.monitorenter.gui.chart.tracepoints.CandleStick;
 import info.monitorenter.gui.chart.tracepoints.VolumeBar;
 import info.monitorenter.gui.chart.traces.Trace2DPoints;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
+import info.monitorenter.gui.chart.traces.painters.TracePainterBackgroundColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,9 +29,7 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static java.lang.Boolean.TRUE;
@@ -75,9 +75,14 @@ public class StonkChartDemo extends JPanel {
 
     final ITrace2D
         ohlc = new Trace2DPoints(new Trace2DSimple(), new PointPainterCandleStick()),
-        vol  = new Trace2DPoints(new Trace2DSimple(), new PointPainterSimpleStick());
+        vol  = new Trace2DPoints(new Trace2DSimple(), new PointPainterSimpleStick()),
+        bg   = new Trace2DSimple();
 
     {
+
+        bg.setTracePainter(new TracePainterBackgroundColor());
+        price.addTrace(bg);
+
 
         price.addTrace(ohlc);
         ohlc.setName("OHLC");
@@ -156,6 +161,8 @@ public class StonkChartDemo extends JPanel {
 
     public void populateChart() throws Exception {
 
+        Set<Long> firstTwoSamples = new LinkedHashSet<>();
+
         importCSV( "AAPL.csv", 10, row -> {
 
             String dateString = row.get("Date");
@@ -177,9 +184,30 @@ public class StonkChartDemo extends JPanel {
                     "close: " + close + ", " +
                     "volume: " + volume + "");
 
+            if(firstTwoSamples.size() < 3)
+                firstTwoSamples.add(time);
+
             paintCandle(time, open, high, low, close, volume);
 
         });
+
+        Long[] two = firstTwoSamples.toArray(new Long[] {});
+
+        Color transparent = new Color(0,0,0,0);
+
+        bg.setZIndex(-1);
+
+        BackgroundColor
+            regBg = new BackgroundColor(two[0], 75d, Color.red),
+            transparentBg = new BackgroundColor(two[1], 75d, transparent),
+            orangeBg = new BackgroundColor(two[2], 75d, Color.orange);
+
+        boolean sequenced = two[0] < two[1] && two[1] < two[2];
+
+        bg.addPoint(regBg);
+        bg.addPoint(transparentBg);
+        bg.addPoint(orangeBg);
+        //todo: why does it paint with two[3] but not two[2]?
 
     }
 
