@@ -88,7 +88,7 @@ public class BackgroundColor extends TracePoint2D {
   public double getX() {
       return super.getX();// + valueWidth;
   }
-  
+
   @Override
   public double getY() {
       //Y is irrelevant for background painters, so we'll always return the midpoint Y
@@ -123,12 +123,13 @@ public class BackgroundColor extends TracePoint2D {
       double
         minX = axis.getMin(),
         maxX = axis.getMax(),
-        myX = this.getX(),
-        valueWidth = nextPoint == null ? maxX - myX : nextPoint.getX() - myX;
+        startX = this.getX(),
+        endX = nextPoint == null ? maxX : nextPoint.getX(),
+        valueWidth = endX - startX;
 
-      if (myX + valueWidth < minX)
+      if (startX + valueWidth < minX)
         result = false;
-      else if (myX > maxX)
+      else if (startX > maxX)
         result = false;
     }
     return result;

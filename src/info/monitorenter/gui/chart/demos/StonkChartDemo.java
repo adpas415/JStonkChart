@@ -12,10 +12,14 @@ import info.monitorenter.gui.chart.labelformatters.formats.PriceFormat;
 import info.monitorenter.gui.chart.labelformatters.formats.TradingVolumeFormat;
 import info.monitorenter.gui.chart.pointpainters.PointPainterCandleStick;
 import info.monitorenter.gui.chart.pointpainters.PointPainterSimpleStick;
+import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
+import info.monitorenter.gui.chart.tracepoints.BackgroundColor;
 import info.monitorenter.gui.chart.tracepoints.CandleStick;
 import info.monitorenter.gui.chart.tracepoints.VolumeBar;
 import info.monitorenter.gui.chart.traces.Trace2DPoints;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
+import info.monitorenter.gui.chart.traces.painters.TracePainterBackgroundColor;
+import info.monitorenter.util.Range;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,9 +31,8 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static java.lang.Boolean.TRUE;
@@ -75,9 +78,14 @@ public class StonkChartDemo extends JPanel {
 
     final ITrace2D
         ohlc = new Trace2DPoints(new Trace2DSimple(), new PointPainterCandleStick()),
-        vol  = new Trace2DPoints(new Trace2DSimple(), new PointPainterSimpleStick());
+        vol  = new Trace2DPoints(new Trace2DSimple(), new PointPainterSimpleStick()),
+        bg   = new Trace2DSimple();
 
     {
+
+        bg.setTracePainter(new TracePainterBackgroundColor());
+        price.addTrace(bg);
+
 
         price.addTrace(ohlc);
         ohlc.setName("OHLC");
@@ -156,6 +164,10 @@ public class StonkChartDemo extends JPanel {
 
     public void populateChart() throws Exception {
 
+        Set<Long> firstTwoSamples = new LinkedHashSet<>();
+
+        List<Long> xCoords = new LinkedList<>();
+
         importCSV( "AAPL.csv", 10, row -> {
 
             String dateString = row.get("Date");
@@ -177,9 +189,37 @@ public class StonkChartDemo extends JPanel {
                     "close: " + close + ", " +
                     "volume: " + volume + "");
 
+            if(firstTwoSamples.size() < 3)
+                firstTwoSamples.add(time);
+
+            xCoords.add(time);
+
+
             paintCandle(time, open, high, low, close, volume);
 
         });
+
+        Long[] two = firstTwoSamples.toArray(new Long[] {});
+
+        Color transparent = new Color(0,0,0,0);
+
+        bg.setZIndex(-1);
+
+        long gapSize = two[2] - two[1];
+
+        BackgroundColor
+            regBg = new BackgroundColor(two[0] - gapSize, 75d, Color.red),
+            transparentBg = new BackgroundColor(two[1], 75d, transparent),
+            orangeBg = new BackgroundColor(two[2], 75d, Color.orange);
+
+        //todo: background painters peg their Y at the half-way point. This is why we get smooshing.
+
+        bg.addPoint(regBg);
+        bg.addPoint(transparentBg);//todo: why is this being ignored?
+        bg.addPoint(orangeBg);
+
+        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(0), xCoords.get(xCoords.size()-1))));
+        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(0), xCoords.get(xCoords.size()-1))));
 
     }
 

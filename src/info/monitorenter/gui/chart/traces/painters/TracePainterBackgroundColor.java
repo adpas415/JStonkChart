@@ -1,24 +1,3 @@
-/*
- *  LinePainter.java,  <enter purpose here>.
- *  Copyright (c) 2004 - 2011  Achim Westermann, Achim.Westermann@gmx.de
- *
- *  This library is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
- *  version 2.1 of the License, or (at your option) any later version.
- * 
- *  This library is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
- * 
- *  You should have received a copy of the GNU Lesser General Public
- *  License along with this library; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- *  If you modify or optimize the code in a useful way please let me know.
- *  Achim.Westermann@gmx.de
- */
 package info.monitorenter.gui.chart.traces.painters;
 
 import info.monitorenter.gui.chart.Chart2D;
@@ -31,15 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-/**
- * A trace painter that renders a trace by lines.
- * <p>
- * 
- * @author <a href="mailto:Achim.Westermann@gmx.de">Achim Westermann </a>
- * 
- * @version $Revision: 1.22 $
- * 
- */
 public class TracePainterBackgroundColor extends ATracePainter {
 
   /** Generated <code>serialVersionUID</code>. */
@@ -113,7 +83,6 @@ public class TracePainterBackgroundColor extends ATracePainter {
    */
   @Override
   public void paintPoint(final int absoluteX, final int absoluteY, final int nextX, final int nextY, final Graphics g, final ITracePoint2D original) {
-    //super.paintPoint(absoluteX, absoluteY, nextX, nextY, g, original);   
     if(original instanceof BackgroundColor) {
         this.m_bgPoints.put(nextX, (BackgroundColor) original);
     }
@@ -156,7 +125,7 @@ public class TracePainterBackgroundColor extends ATracePainter {
 
     protected void doDrawOperation(final Graphics g) {
 
-      LinkedList<Map.Entry<Integer, BackgroundColor>> colorsToPaint = new LinkedList<>(m_bgPoints.entrySet());
+        LinkedList<Map.Entry<Integer, BackgroundColor>> colorsToPaint = new LinkedList<>(m_bgPoints.entrySet());
 
       while(!colorsToPaint.isEmpty()) {
 
@@ -174,16 +143,21 @@ public class TracePainterBackgroundColor extends ATracePainter {
                   throw new IllegalStateException("Given point is in a trace that is not attached to a chart yet. Cannot paint!");
               } else {
 
-                  boolean last = colorsToPaint.isEmpty();
+                  if(bgColor.isVisibleOnAxisX()) {
 
-                  int x_next = last ? chart.getXChartEnd() : colorsToPaint.peek().getKey();
+                      boolean isCurrentBackground = colorsToPaint.isEmpty();
 
-                  int chartMinX= chart.getXChartStart();
-                  int Width = last ? chart.getXChartEnd() - Math.max(chart.getXChartStart(), absoluteX) : x_next - Math.max(absoluteX, chartMinX);
+                      int endAtPixelX = isCurrentBackground ? chart.getXChartEnd() : colorsToPaint.peek().getKey();
+                      int startAtPixelX = Math.max(absoluteX, chart.getXChartStart());
+                      int widthToPaint = isCurrentBackground ? chart.getXChartEnd() - startAtPixelX : endAtPixelX - startAtPixelX;
 
-                  g.setColor(bgColor.getColor());
+                      Color color = bgColor.getColor();
 
-                  g.fillRect(Math.max(absoluteX, chartMinX), chart.getYChartEnd(), Width, chart.getYAxisHeight());
+                      g.setColor(color);
+
+                      g.fillRect(startAtPixelX, chart.getYChartEnd(), widthToPaint, chart.getYAxisHeight());
+
+                  }
 
               }
           }
