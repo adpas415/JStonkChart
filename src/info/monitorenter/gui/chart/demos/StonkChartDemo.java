@@ -168,7 +168,7 @@ public class StonkChartDemo extends JPanel {
 
         List<Long> xCoords = new LinkedList<>();
 
-        importCSV( "AAPL.csv", 10, row -> {
+        importCSV( "AAPL.csv", 20, row -> {
 
             String dateString = row.get("Date");
 
@@ -218,8 +218,8 @@ public class StonkChartDemo extends JPanel {
         bg.addPoint(transparentBg);//todo: why is this being ignored?
         bg.addPoint(orangeBg);
 
-        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(0), xCoords.get(xCoords.size()-1))));
-        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(0), xCoords.get(xCoords.size()-1))));
+        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1))));
+        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1))));
 
     }
 

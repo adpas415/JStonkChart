@@ -274,7 +274,7 @@ public class TracePoint2DUtil {
         result = tracePointProvider.createTracePoint(0, 0, visible.getListener());
         // transfer potential point highlighters to the synthetic point:
         for (IPointPainter< ? > highlighter : invisible.getAdditionalPointPainters()) {
-          result.addAdditionalPointPainter(highlighter);
+          //result.addAdditionalPointPainter(highlighter); // removed as hotfix. caused infinite repainting loop when candlesticks left visible range.
         }
         result.setScaledX(xInterpolate);
         result.setScaledY(yInterpolate);
