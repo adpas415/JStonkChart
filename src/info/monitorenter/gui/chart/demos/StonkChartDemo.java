@@ -109,7 +109,6 @@ public class StonkChartDemo extends JPanel {
         setLayout(new BorderLayout());
         add(chartStack);
 
-
     }
 
     private void importCSV(String fileName, int limit, Consumer<Map<String, String>> rowConsumer) throws Exception {
@@ -164,11 +163,9 @@ public class StonkChartDemo extends JPanel {
 
     public void populateChart() throws Exception {
 
-        Set<Long> firstTwoSamples = new LinkedHashSet<>();
-
         List<Long> xCoords = new LinkedList<>();
 
-        importCSV( "AAPL.csv", 20, row -> {
+        importCSV( "AAPL.csv", 25, row -> {
 
             String dateString = row.get("Date");
 
@@ -189,9 +186,6 @@ public class StonkChartDemo extends JPanel {
                     "close: " + close + ", " +
                     "volume: " + volume + "");
 
-            if(firstTwoSamples.size() < 3)
-                firstTwoSamples.add(time);
-
             xCoords.add(time);
 
 
@@ -199,27 +193,27 @@ public class StonkChartDemo extends JPanel {
 
         });
 
-        Long[] two = firstTwoSamples.toArray(new Long[] {});
-
-        Color transparent = new Color(0,0,0,0);
+        Color
+            red = new Color(255, 0, 0, 50),
+            orange = new Color(255, 200, 0, 50),
+            transparent = new Color(0,0,0,0);
 
         bg.setZIndex(-1);
 
-        long gapSize = two[2] - two[1];
 
         BackgroundColor
-            regBg = new BackgroundColor(two[0] - gapSize, 75d, Color.red),
-            transparentBg = new BackgroundColor(two[1], 75d, transparent),
-            orangeBg = new BackgroundColor(two[2], 75d, Color.orange);
-
-        //todo: background painters peg their Y at the half-way point. This is why we get smooshing.
+            regBg = new BackgroundColor(xCoords.get(3), 80, red),
+            transparentBg = new BackgroundColor(xCoords.get(13), 80, transparent),
+            orangeBg = new BackgroundColor(xCoords.get(17), 80, orange);
 
         bg.addPoint(regBg);
-        bg.addPoint(transparentBg);//todo: why is this being ignored?
+        bg.addPoint(transparentBg);
         bg.addPoint(orangeBg);
 
-        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1))));
-        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1))));
+        long twelveHours = 1000*60*60*12;
+
+        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1) - twelveHours)));
+        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1) - twelveHours)));
 
     }
 

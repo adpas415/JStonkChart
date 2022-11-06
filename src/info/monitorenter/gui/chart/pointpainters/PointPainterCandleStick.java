@@ -193,7 +193,6 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
      * absoluteX corresponds to getX(), absoluteY to getStart(). All other
      * coords have to be transformed to px.
      */
-    double x = nextX;
     /*
      * Get the corresponding chart for coordinate translation:
      */
@@ -236,6 +235,18 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
              * Compute Bar Width
              */
 
+          double
+              xValue = candleStick.getX(),
+              xAxis_maxVisibleValue = chart.getAxisX().getMax(),
+              xAxis_minVisibleValue = chart.getAxisX().getMin(),
+              xAxis_visibleRange = xAxis_maxVisibleValue - xAxis_minVisibleValue,
+              xNormalized = (xValue - xAxis_minVisibleValue) /  xAxis_visibleRange,
+              xChartStartPx = chart.getXChartStart(),
+              xChartEndPx = chart.getXChartEnd(),
+              rangeXPx = xChartEndPx - xChartStartPx,
+              xAsDouble = xChartStartPx + (int) Math.round(xNormalized * rangeXPx);
+
+          int x = (int)xAsDouble;
           //Finally, paint the bar:
 
           Color candleStickColor = candleStick.getColor();
@@ -247,31 +258,35 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
             g.setColor(candleStick.getColorFaded());
 
             //draw the wick
-            g.drawLine((int)x, (int)highYPx, (int)x, (int)lowYPx);
+            g.drawLine(x, (int)highYPx, x, (int)lowYPx);
 
             //color the body
             g.setColor(candleStickColor);
 
             //draw the body
-            g.drawLine((int)x, (int)startYPx, (int)x, (int)endYPx);
+            g.drawLine(x, (int)startYPx, x, (int)endYPx);
 
           } else {
 
             //color the candlestick
             g.setColor(candleStickColor);
 
-            int finalX = (int)x;
-
             //draw the wick
-            g.drawLine(finalX, (int)highYPx, finalX, (int)lowYPx);
+            g.drawLine(x, (int)highYPx, x, (int)lowYPx);
 
             int finalBarWidth = barWidth + 1 + barWidth;
 
+            int yAxisWestBoundary = trace2D.getRenderer().getAxisY().getPixelXRight();
+
+            int barLeftPixel = Math.max(x-barWidth, yAxisWestBoundary);
+
+            int offset = Math.abs((x-barWidth) - barLeftPixel);
+
             //draw the body
             g.fillRect(
-            finalX-barWidth,
+              barLeftPixel,
               (int)Math.min(startYPx, endYPx),
-              finalBarWidth,
+              finalBarWidth - offset,
               1 + (int) Math.abs(startYPx - endYPx)
             );
 

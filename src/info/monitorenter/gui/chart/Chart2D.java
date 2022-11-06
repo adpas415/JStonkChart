@@ -21,6 +21,8 @@ import info.monitorenter.gui.chart.axis.AxisLinear;
 import info.monitorenter.gui.chart.axistickpainters.AxisTickPainterDefault;
 import info.monitorenter.gui.chart.events.Chart2DActionPrintSingleton;
 import info.monitorenter.gui.chart.tracepoints.BackgroundColor;
+import info.monitorenter.gui.chart.tracepoints.CandleStick;
+import info.monitorenter.gui.chart.tracepoints.VolumeBar;
 import info.monitorenter.gui.util.TracePoint2DUtil;
 import info.monitorenter.util.IStopWatch;
 import info.monitorenter.util.Range;

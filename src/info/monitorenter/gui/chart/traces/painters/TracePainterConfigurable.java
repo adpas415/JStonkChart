@@ -131,7 +131,7 @@ public class TracePainterConfigurable<T extends IPointPainterConfigurableUI<T>> 
         //this.m_pointPainter.paintPoint(previousX, previousY, previousX, previousY, g2d, this.getPreviousPoint());
       }
     }
-    this.m_pointPainter.endPaintIteration(g2d);
+    //this.m_pointPainter.endPaintIteration(g2d);
   }
 
   /**
@@ -217,8 +217,13 @@ public class TracePainterConfigurable<T extends IPointPainterConfigurableUI<T>> 
    */
   @Override
   public void paintPoint(final int absoluteX, final int absoluteY, final int nextX, final int nextY, final Graphics g, final ITracePoint2D original) {
-    super.paintPoint(absoluteX, absoluteY, nextX, nextY, g, original);
+    //super.paintPoint(absoluteX, absoluteY, nextX, nextY, g, original);
     this.m_pointPainter.paintPoint(absoluteX, absoluteY, nextX, nextY, g, original);
+  }
+
+  @Override
+  public void discontinue(Graphics g2d) {
+    //super.discontinue(g2d);
   }
 
   /**

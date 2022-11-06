@@ -68,6 +68,7 @@ public class BackgroundColor extends TracePoint2D {
   public BackgroundColor(final double xValue, final double yValue, final Color bgColor) {
     super(xValue, yValue);
     this.m_bgColor = bgColor;
+    //todo: flag to ignore Y
   }
 
   /** Generated <code>serialVersionUID</code>. **/
@@ -82,21 +83,6 @@ public class BackgroundColor extends TracePoint2D {
   Color m_bgColor;
   public Color getColor() {
     return this.m_bgColor;
-  }
-
-  @Override
-  public double getX() {
-      return super.getX();// + valueWidth;
-  }
-
-  @Override
-  public double getY() {
-      //Y is irrelevant for background painters, so we'll always return the midpoint Y
-      if(getListener() != null && this.getListener().getRenderer() != null) {
-          IAxis axis_Y = this.getListener().getRenderer().getAxisY(this.getListener());
-          return (axis_Y.getMin() + axis_Y.getMax()) /2;
-      }
-    return super.getY();
   }
 
   TracePainterBackgroundColor tracePainter;

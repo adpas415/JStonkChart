@@ -44,12 +44,6 @@ public class ChartStack extends JPanel {
 
     }
 
-    Map<Chart2D, Double> weightsByChart = new HashMap<>();
-    public void addChart(Chart2D chart, double resizeWeight) {
-        weightsByChart.put(chart, resizeWeight);
-        charts.add(chart);
-    }
-    
     public void addChart(Chart2D chart) {
         charts.add(chart);
     }
@@ -112,10 +106,6 @@ public class ChartStack extends JPanel {
                     topPane = new MinimalistSplitPane(JSplitPane.VERTICAL_SPLIT, dividerColor, dividerThickness, topPane == null ? firstChart : topPane, nextChart);
                 } else if( topPane == null && !iter.hasNext() )
                     topPane = firstChart;
-
-                if(weightsByChart.containsKey(nextChart) && topPane instanceof JSplitPane) {
-                    ((JSplitPane) topPane).setResizeWeight(weightsByChart.get(nextChart));
-                }
 
             }
             add(topPane);
