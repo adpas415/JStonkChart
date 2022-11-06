@@ -165,7 +165,7 @@ public class StonkChartDemo extends JPanel {
 
         List<Long> xCoords = new LinkedList<>();
 
-        importCSV( "AAPL.csv", 25, row -> {
+        importCSV( "AAPL.csv", 30, row -> {
 
             String dateString = row.get("Date");
 
@@ -212,8 +212,8 @@ public class StonkChartDemo extends JPanel {
 
         long twelveHours = 1000*60*60*12;
 
-        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1) - twelveHours)));
-        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(10), xCoords.get(xCoords.size()-1) - twelveHours)));
+        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(1), xCoords.get(xCoords.size()-2) - twelveHours)));
+        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(1), xCoords.get(xCoords.size()-2) - twelveHours)));
 
     }
 
@@ -269,7 +269,7 @@ public class StonkChartDemo extends JPanel {
 
         //faded grid
         xAxis.setPaintGrid(true);
-        xAxis.setFormatter(new LabelFormatterDate(new SimpleDateFormat("MM/yy")));//this format is ignored
+        xAxis.setFormatter(new LabelFormatterDate(new SimpleDateFormat("MM/dd/yy")));//this format is ignored
         xAxis.setAxisScalePolicy(new AxisScalePolicySkipTimeBlocks());
 
     }
