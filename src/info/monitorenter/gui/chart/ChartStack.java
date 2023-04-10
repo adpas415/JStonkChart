@@ -139,7 +139,7 @@ public class ChartStack extends JPanel {
         public MinimalistSplitPane(int orientation, Color dividerColor, int dividerThickness, Component component1, Component component2) {
             super(orientation, component1, component2);
             setup(dividerColor, dividerThickness);
-
+            setResizeWeight(1);
         }
 
         private void setup(Color separatorColor, int dividerThickness) {
