@@ -3,6 +3,7 @@ package info.monitorenter.gui.chart.pointpainters;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.ITracePoint2D;
 import info.monitorenter.gui.chart.tracepoints.Tag;
+import info.monitorenter.util.Range;
 
 import java.awt.*;
 
@@ -25,7 +26,7 @@ public class PointPainterTag extends APointPainter<PointPainterTag> {
    */
   @Override
   public double calculateMaxX(final ITracePoint2D point) {      
-    if(point.getClass().equals(Tag.class) && point.getListener() != null && !((Tag)point).getAdjust() && point.getListener().getRenderer().getGraphics() != null) {
+/*    if(point.getClass().equals(Tag.class) && point.getListener() != null && !((Tag)point).getAdjust() && point.getListener().getRenderer().getGraphics() != null) {
         
         String longestLine = "";
         for(String line : ((Tag)point).getText().split("\n"))
@@ -35,7 +36,7 @@ public class PointPainterTag extends APointPainter<PointPainterTag> {
                     
         return xAxis.translatePxToValue( xAxis.translateValueToPx(point.getX()) + ((Tag)point).getTextX() + point.getListener().getRenderer().getGraphics().getFontMetrics().stringWidth(longestLine));
         
-    }
+    }*/
     return point.getX();
   }
 
@@ -133,25 +134,30 @@ public class PointPainterTag extends APointPainter<PointPainterTag> {
   public void paintPoint(final int absoluteX, final int absoluteY, final int nextX, final int nextY, final Graphics g, final ITracePoint2D original) {
     if(original.getClass().equals(Tag.class)) {
 
-        Tag tag = (Tag) original;
-        String str = tag.getText();
-        Color c = tag.getColor();
-        Image m_Tag = tag.getTag();
+        int xChartStartPx = trace2D.getRenderer().getXChartStart();
+        int xChartEndPx = trace2D.getRenderer().getXChartEnd();
 
-        if(m_Tag != null) {
-            g.drawImage(m_Tag, nextX + tag.getTagX(), nextY + tag.getTagY(), null);
-        }      
-        if(str != null && !str.isEmpty()) {
-            g.setColor(c);
+        if(nextX > xChartStartPx && nextX < xChartEndPx) {
 
-            int x = nextX + (tag.getAdjust() ? tag.getTextX() - g.getFontMetrics().stringWidth(!str.contains("\n") ? str : str.substring(0, str.indexOf("\n"))) : tag.getTextX());
-            int y = nextY + tag.getTextY() - g.getFontMetrics().getHeight();
+            Tag tag = (Tag) original;
+            String str = tag.getText();
+            Color c = tag.getColor();
+            Image m_Tag = tag.getTag();
 
-            for (String line : str.split("\n")) {
-                g.drawString(line, x, y += g.getFontMetrics().getHeight());
+            if (m_Tag != null) {
+                g.drawImage(m_Tag, nextX + tag.getTagX(), nextY + tag.getTagY(), null);
+            }
+            if (str != null && !str.isEmpty()) {
+                g.setColor(c);
+
+                int x = nextX + (tag.getAdjust() ? tag.getTextX() - g.getFontMetrics().stringWidth(!str.contains("\n") ? str : str.substring(0, str.indexOf("\n"))) : tag.getTextX());
+                int y = nextY + tag.getTextY() - g.getFontMetrics().getHeight();
+
+                for (String line : str.split("\n")) {
+                    g.drawString(line, x, y += g.getFontMetrics().getHeight());
+                }
             }
         }
-    
         
     }
   }

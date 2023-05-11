@@ -12,9 +12,11 @@ import info.monitorenter.gui.chart.labelformatters.formats.PriceFormat;
 import info.monitorenter.gui.chart.labelformatters.formats.TradingVolumeFormat;
 import info.monitorenter.gui.chart.pointpainters.PointPainterCandleStick;
 import info.monitorenter.gui.chart.pointpainters.PointPainterSimpleStick;
+import info.monitorenter.gui.chart.pointpainters.PointPainterTag;
 import info.monitorenter.gui.chart.rangepolicies.RangePolicyFixedViewport;
 import info.monitorenter.gui.chart.tracepoints.BackgroundColor;
 import info.monitorenter.gui.chart.tracepoints.CandleStick;
+import info.monitorenter.gui.chart.tracepoints.Tag;
 import info.monitorenter.gui.chart.tracepoints.VolumeBar;
 import info.monitorenter.gui.chart.traces.Trace2DPoints;
 import info.monitorenter.gui.chart.traces.Trace2DSimple;
@@ -79,13 +81,15 @@ public class StonkChartDemo extends JPanel {
     final ITrace2D
         ohlc = new Trace2DPoints(new Trace2DSimple(), new PointPainterCandleStick()),
         vol  = new Trace2DPoints(new Trace2DSimple(), new PointPainterSimpleStick()),
-        bg   = new Trace2DSimple();
+        bg   = new Trace2DSimple(),
+        tags = new Trace2DPoints(new Trace2DSimple(), new PointPainterTag());
 
     {
 
         bg.setTracePainter(new TracePainterBackgroundColor());
         price.addTrace(bg);
 
+        price.addTrace(tags);
 
         price.addTrace(ohlc);
         ohlc.setName("OHLC");
@@ -212,8 +216,16 @@ public class StonkChartDemo extends JPanel {
 
         long twelveHours = 1000*60*60*12;
 
-        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(1), xCoords.get(xCoords.size()-2) - twelveHours)));
-        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(1), xCoords.get(xCoords.size()-2) - twelveHours)));
+        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(3), xCoords.get(xCoords.size()-3) - twelveHours)));
+        volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(3), xCoords.get(xCoords.size()-3) - twelveHours)));
+
+        tags.addPoint(new Tag(xCoords.get(0), 75, 0, 0, null, 0, 0, "1", false, Color.WHITE));
+        tags.addPoint(new Tag(xCoords.get(1), 76, 0, 0, null, 0, 0, "2", false, Color.WHITE));
+        tags.addPoint(new Tag(xCoords.get(5), 77, 0, 0, null, 0, 0, "3", false, Color.WHITE));
+        tags.addPoint(new Tag(xCoords.get(12), 78, 0, 0, null, 0, 0, "4", false, Color.WHITE));
+        tags.addPoint(new Tag(xCoords.get(16), 79, 0, 0, null, 0, 0, "5", false, Color.WHITE));
+        tags.addPoint(new Tag(xCoords.get(xCoords.size()-2), 80, 0, 0, null, 0, 0, "6", false, Color.WHITE));
+        tags.addPoint(new Tag(xCoords.get(xCoords.size()-1), 81, 0, 0, null, 0, 0, "7", false, Color.WHITE));
 
     }
 
