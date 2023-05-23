@@ -4,6 +4,7 @@ import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.ChartStack;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.ITrace2D;
+import info.monitorenter.gui.chart.axis.AxisLinearSkipTimeBlocks;
 import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyPrice;
 import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicySkipTimeBlocks;
 import info.monitorenter.gui.chart.labelformatters.LabelFormatterDate;
@@ -51,7 +52,7 @@ public class StonkChartDemo extends JPanel {
         JFrame frame = new JFrame("StonkChartDemo");
         // add the chart to the frame:
         frame.getContentPane().add(chart);
-        frame.setSize(400, 300);
+        frame.setSize(800, 600);
         // Enable the termination button [cross on the upper right edge]:
         frame.addWindowListener(new WindowAdapter() {
             /**
@@ -84,7 +85,11 @@ public class StonkChartDemo extends JPanel {
         bg   = new Trace2DSimple(),
         tags = new Trace2DPoints(new Trace2DSimple(), new PointPainterTag());
 
+    AxisLinearSkipTimeBlocks<AxisScalePolicySkipTimeBlocks> priceAxisX = new AxisLinearSkipTimeBlocks<>();
+
     {
+
+        price.setAxisXBottom(priceAxisX, 0);
 
         bg.setTracePainter(new TracePainterBackgroundColor());
         price.addTrace(bg);
@@ -102,66 +107,19 @@ public class StonkChartDemo extends JPanel {
         decorateChart(price);
         decorateChart(volume);
         yAxisPrice(price);
+        xAxisTime(price);
+
         yAxisVolume(volume);
         xAxisTime(volume);
 
-        ChartStack chartStack = new ChartStack(Color.black, 6);
+        /*ChartStack chartStack = new ChartStack(Color.black, 6);
         chartStack.addChart(price);
         chartStack.addChart(volume);
-        chartStack.refreshStackSync();
+        chartStack.refreshStackSync();*/
 
-        setLayout(new BorderLayout());
-        add(chartStack);
-
-    }
-
-    private void importCSV(String fileName, int limit, Consumer<Map<String, String>> rowConsumer) throws Exception {
-
-        String csv_pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", resourcesRootDir = "/";
-
-        InputStream resourceAsStream = getClass().getResourceAsStream(resourcesRootDir+fileName);
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream))) {
-
-            LinkedList<String> headers = new LinkedList<>();
-
-            int lineNum = 0;
-            String line;
-            while ((line = reader.readLine()) != null && (limit == -1 ? TRUE : limit-- > 0)) {
-
-                try {
-
-                    lineNum++;
-                    String[] contents = line.split(csv_pattern);
-
-                    //consume first row as headers
-                    if(headers.isEmpty()) {
-
-                        for(String header : contents)
-                            headers.add(header);
-
-                    } else {
-
-                        if(contents.length != headers.size())
-                            throw new Exception("Column Count Mismatch on Line #"+lineNum);
-
-                        Map<String, String> row = new LinkedHashMap<>();
-                        for(int column = 0; column < headers.size(); column++)
-                            row.put(headers.get(column), contents[column]);
-
-                        rowConsumer.accept(row);
-
-                    }
-
-                } catch (Exception ex) {
-                    throw ex;
-                }
-
-            }
-
-        } catch (Exception ex) {
-            throw ex;
-        }
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        add(price);
+        add(volume);
 
     }
 
@@ -207,7 +165,7 @@ public class StonkChartDemo extends JPanel {
 
         BackgroundColor
             regBg = new BackgroundColor(xCoords.get(3), 80, red),
-            transparentBg = new BackgroundColor(xCoords.get(13), 80, transparent),
+            transparentBg = new BackgroundColor(xCoords.get(10), 80, transparent),
             orangeBg = new BackgroundColor(xCoords.get(17), 80, orange);
 
         bg.addPoint(regBg);
@@ -216,7 +174,7 @@ public class StonkChartDemo extends JPanel {
 
         long twelveHours = 1000*60*60*12;
 
-        price.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(3), xCoords.get(xCoords.size()-3) - twelveHours)));
+        priceAxisX.setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(3), xCoords.get(xCoords.size()-3) - twelveHours)));
         volume.getAxisX().setRangePolicy(new RangePolicyFixedViewport(new Range(xCoords.get(3), xCoords.get(xCoords.size()-3) - twelveHours)));
 
         tags.addPoint(new Tag(xCoords.get(0), 75, 0, 0, null, 0, 0, "1", false, Color.WHITE));
@@ -226,6 +184,8 @@ public class StonkChartDemo extends JPanel {
         tags.addPoint(new Tag(xCoords.get(16), 79, 0, 0, null, 0, 0, "5", false, Color.WHITE));
         tags.addPoint(new Tag(xCoords.get(xCoords.size()-2), 80, 0, 0, null, 0, 0, "6", false, Color.WHITE));
         tags.addPoint(new Tag(xCoords.get(xCoords.size()-1), 81, 0, 0, null, 0, 0, "7", false, Color.WHITE));
+
+        priceAxisX.addOmittedTimeBlock(xCoords.get(11), xCoords.get(16));
 
     }
 
@@ -283,6 +243,56 @@ public class StonkChartDemo extends JPanel {
         xAxis.setPaintGrid(true);
         xAxis.setFormatter(new LabelFormatterDate(new SimpleDateFormat("MM/dd/yy")));//this format is ignored
         xAxis.setAxisScalePolicy(new AxisScalePolicySkipTimeBlocks());
+
+    }
+
+    private void importCSV(String fileName, int limit, Consumer<Map<String, String>> rowConsumer) throws Exception {
+
+        String csv_pattern = ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", resourcesRootDir = "/";
+
+        InputStream resourceAsStream = getClass().getResourceAsStream(resourcesRootDir+fileName);
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream))) {
+
+            LinkedList<String> headers = new LinkedList<>();
+
+            int lineNum = 0;
+            String line;
+            while ((line = reader.readLine()) != null && (limit == -1 ? TRUE : limit-- > 0)) {
+
+                try {
+
+                    lineNum++;
+                    String[] contents = line.split(csv_pattern);
+
+                    //consume first row as headers
+                    if(headers.isEmpty()) {
+
+                        for(String header : contents)
+                            headers.add(header);
+
+                    } else {
+
+                        if(contents.length != headers.size())
+                            throw new Exception("Column Count Mismatch on Line #"+lineNum);
+
+                        Map<String, String> row = new LinkedHashMap<>();
+                        for(int column = 0; column < headers.size(); column++)
+                            row.put(headers.get(column), contents[column]);
+
+                        rowConsumer.accept(row);
+
+                    }
+
+                } catch (Exception ex) {
+                    throw ex;
+                }
+
+            }
+
+        } catch (Exception ex) {
+            throw ex;
+        }
 
     }
 

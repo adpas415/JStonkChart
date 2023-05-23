@@ -193,6 +193,7 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
      * absoluteX corresponds to getX(), absoluteY to getStart(). All other
      * coords have to be transformed to px.
      */
+    double x = nextX;
     /*
      * Get the corresponding chart for coordinate translation:
      */
@@ -234,19 +235,17 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
             /*
              * Compute Bar Width
              */
-
+/*
           double
-              xValue = candleStick.getX(),
               xAxis_maxVisibleValue = chart.getAxisX().getMax(),
               xAxis_minVisibleValue = chart.getAxisX().getMin(),
               xAxis_visibleRange = xAxis_maxVisibleValue - xAxis_minVisibleValue,
-              xNormalized = (xValue - xAxis_minVisibleValue) /  xAxis_visibleRange,
+              xNormalized = (x - xAxis_minVisibleValue) /  xAxis_visibleRange,
               xChartStartPx = chart.getXChartStart(),
               xChartEndPx = chart.getXChartEnd(),
               rangeXPx = xChartEndPx - xChartStartPx,
-              xAsDouble = xChartStartPx + (int) Math.round(xNormalized * rangeXPx);
+              xAsDouble = xChartStartPx + (int) Math.round(xNormalized * rangeXPx);*/
 
-          int x = (int)xAsDouble;
           //Finally, paint the bar:
 
           Color candleStickColor = candleStick.getColor();
@@ -258,13 +257,13 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
             g.setColor(candleStick.getColorFaded());
 
             //draw the wick
-            g.drawLine(x, (int)highYPx, x, (int)lowYPx);
+            g.drawLine((int)x, (int)highYPx, (int)x, (int)lowYPx);
 
             //color the body
             g.setColor(candleStickColor);
 
             //draw the body
-            g.drawLine(x, (int)startYPx, x, (int)endYPx);
+            g.drawLine((int)x, (int)startYPx, (int)x, (int)endYPx);
 
           } else {
 
@@ -272,15 +271,15 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
             g.setColor(candleStickColor);
 
             //draw the wick
-            g.drawLine(x, (int)highYPx, x, (int)lowYPx);
+            g.drawLine((int)x, (int)highYPx, (int)x, (int)lowYPx);
 
             int finalBarWidth = barWidth + 1 + barWidth;
 
             int yAxisWestBoundary = trace2D.getRenderer().getAxisY().getPixelXRight();
 
-            int barLeftPixel = Math.max(x-barWidth, yAxisWestBoundary);
+            int barLeftPixel = Math.max((int)x-barWidth, yAxisWestBoundary);
 
-            int offset = Math.abs((x-barWidth) - barLeftPixel);
+            int offset = Math.abs(((int)x-barWidth) - barLeftPixel);
 
             //draw the body
             g.fillRect(

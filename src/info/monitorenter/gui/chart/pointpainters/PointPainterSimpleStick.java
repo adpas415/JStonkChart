@@ -128,6 +128,7 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
      * absoluteX corresponds to getX(), absoluteY to getStart(). All other
      * coords have to be transformed to px.
      */
+      double x = nextX;
     /*
      * Get the corresponding chart for coordinate translation:
      */
@@ -159,7 +160,7 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
             double lowYPx = yChartStartPx - (int) Math.round(lowYNormalized * rangeYPx);
 
 
-            double
+            /*double
                 xValue = volumeBar.getX(),
                 xAxis_maxVisibleValue = chart.getAxisX().getMax(),
                 xAxis_minVisibleValue = chart.getAxisX().getMin(),
@@ -168,9 +169,7 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
                 xChartStartPx = chart.getXChartStart(),
                 xChartEndPx = chart.getXChartEnd(),
                 rangeXPx = xChartEndPx - xChartStartPx,
-                xAsDouble = xChartStartPx + (int) Math.round(xNormalized * rangeXPx);
-
-            int x = (int)xAsDouble;
+                xAsDouble = xChartStartPx + (int) Math.round(xNormalized * rangeXPx);*/
 
             Color candleStickColor = volumeBar.getColor();
 
@@ -186,15 +185,15 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
             } else {
 
                 //draw the wick
-                g.drawLine(x, (int)highYPx, x, (int)lowYPx);
+                g.drawLine((int)x, (int)highYPx, (int)x, (int)lowYPx);
 
                 int finalBarWidth = barWidth + 1 + barWidth;
 
                 int yAxisWestBoundary = trace2D.getRenderer().getAxisY().getPixelXRight();
 
-                int barLeftPixel = Math.max(x-barWidth, yAxisWestBoundary);
+                int barLeftPixel = Math.max((int)x-barWidth, yAxisWestBoundary);
 
-                int offset = Math.abs((x-barWidth) - barLeftPixel);
+                int offset = Math.abs(((int)x-barWidth) - barLeftPixel);
 
                 //draw the body
                 g.fillRect(
