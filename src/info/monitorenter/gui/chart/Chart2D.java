@@ -3120,8 +3120,10 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
                * check if the interconnection of both invisible points cuts the
                * visible area:
                */
-              oldpoint = TracePoint2DUtil.interpolateVisible(oldpoint, newpoint, tracePointProvider);
-              newpoint = TracePoint2DUtil.interpolateVisible(newpoint, oldpoint, tracePointProvider);
+              if(trace.interpolateDiscontinuedPoints()) {
+                oldpoint = TracePoint2DUtil.interpolateVisible(oldpoint, newpoint, tracePointProvider);
+                newpoint = TracePoint2DUtil.interpolateVisible(newpoint, oldpoint, tracePointProvider);
+              } else if(oldpoint == null) oldpoint = newpoint;
 
               tmpx = this.m_xChartStart + (int) Math.round(newpoint.getScaledX() * rangex);
               tmpy = this.m_yChartStart - (int) Math.round(newpoint.getScaledY() * rangey);
@@ -3140,7 +3142,9 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
             } else if (newpointVisible && !oldpointVisible) {
               // entering the visible bounds: interpolate from old point
               // to new point
-              oldpoint = TracePoint2DUtil.interpolateVisible(oldpoint, newpoint, tracePointProvider);
+              if(trace.interpolateDiscontinuedPoints()) {
+                oldpoint = TracePoint2DUtil.interpolateVisible(oldpoint, newpoint, tracePointProvider);
+              } else if(oldpoint == null) oldpoint = newpoint;
               tmpx = this.m_xChartStart + (int) Math.round(newpoint.getScaledX() * rangex);
               tmpy = this.m_yChartStart - (int) Math.round(newpoint.getScaledY() * rangey);
               oldtmpx = this.m_xChartStart + (int) Math.round(oldpoint.getScaledX() * rangex);
@@ -3155,7 +3159,9 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
             } else if (!newpointVisible && oldpointVisible) {
               // leaving the visible bounds:
               tmppt = (ITracePoint2D) newpoint.clone();
-              newpoint = TracePoint2DUtil.interpolateVisible(newpoint, oldpoint, tracePointProvider);
+              if(trace.interpolateDiscontinuedPoints()) {
+                newpoint = TracePoint2DUtil.interpolateVisible(newpoint, oldpoint, tracePointProvider);
+              }
               tmpx = this.m_xChartStart + (int) Math.round(newpoint.getScaledX() * rangex);
               tmpy = this.m_yChartStart - (int) Math.round(newpoint.getScaledY() * rangey);
               // don't use error bars for interpolated points!

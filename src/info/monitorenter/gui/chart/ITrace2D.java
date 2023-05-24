@@ -1420,4 +1420,8 @@ public interface ITrace2D extends PropertyChangeListener, Comparable<ITrace2D>, 
    */
   public boolean showsPositiveYErrorBars();
 
+  public default boolean interpolateDiscontinuedPoints() {
+    return true;
+  }
+
 }

@@ -101,8 +101,8 @@ public class Trace2DPoints implements ITrace2D {
    * @see ITrace2D#addPoint(ITracePoint2D)
    */
   public boolean addPoint(ITracePoint2D p) {
-    p.removeAllAdditionalPointPainters();
-    p.addAdditionalPointPainter(this.m_pointPainter);
+    //p.removeAllAdditionalPointPainters();
+    //p.addAdditionalPointPainter(this.m_pointPainter);
     boolean result = this.m_delegate.addPoint(p, this);
     return result;
   }
@@ -584,6 +584,11 @@ public class Trace2DPoints implements ITrace2D {
    */
   public boolean showsPositiveYErrorBars() {
     return this.m_delegate.showsPositiveYErrorBars();
+  }
+
+  @Override
+  public boolean interpolateDiscontinuedPoints() {
+    return false;
   }
 /*
   @Override
