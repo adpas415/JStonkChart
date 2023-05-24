@@ -3158,16 +3158,16 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
               //}
             } else if (!newpointVisible && oldpointVisible) {
               // leaving the visible bounds:
-              tmppt = (ITracePoint2D) newpoint.clone();
+              //tmppt = (ITracePoint2D) newpoint.clone();
               if(trace.interpolateDiscontinuedPoints()) {
                 newpoint = TracePoint2DUtil.interpolateVisible(newpoint, oldpoint, tracePointProvider);
               }
               tmpx = this.m_xChartStart + (int) Math.round(newpoint.getScaledX() * rangex);
               tmpy = this.m_yChartStart - (int) Math.round(newpoint.getScaledY() * rangey);
               // don't use error bars for interpolated points!
-              this.paintPoint(oldtmpx, oldtmpy, tmpx, tmpy, true, trace, g, oldpoint, false, rangex, rangey);
+              this.paintPoint(oldtmpx, oldtmpy, tmpx, tmpy, true, trace, g, newpoint, false, rangex, rangey);
               // restore for next loop start:
-              newpoint = tmppt;
+              //newpoint = tmppt;
             } else {
               // staying in the visible bounds: just paint
               tmpx = this.m_xChartStart + (int) Math.round(newpoint.getScaledX() * rangex);
