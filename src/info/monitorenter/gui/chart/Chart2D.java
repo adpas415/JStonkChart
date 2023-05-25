@@ -3152,10 +3152,15 @@ public class Chart2D extends JPanel implements PropertyChangeListener, Iterable<
               /**
                * Oldpoint was null before call to interpolate: First iteration.
                */
-              //if (oldpoint != newpoint) {
-                // don't use error bars for interpolated points!
-              this.paintPoint(oldtmpx, oldtmpy, tmpx, tmpy, true, trace, g, newpoint, false, rangex, rangey);
-              //}
+
+              // if we actually have a previous point that isn't visible, we need to paint it for discontinuation and/or partial-point painting.
+              if(oldpoint != newpoint) {
+                this.paintPoint(oldtmpx, oldtmpy, oldtmpx, oldtmpy, true, trace, g, oldpoint, false, rangex, rangey);
+              }
+
+              // paint the new point, it's visible.
+              this.paintPoint(oldtmpx, oldtmpy, tmpx, tmpy, false, trace, g, newpoint, false, rangex, rangey);
+
             } else if (!newpointVisible && oldpointVisible) {
               // leaving the visible bounds:
               //tmppt = (ITracePoint2D) newpoint.clone();
