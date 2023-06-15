@@ -11,6 +11,7 @@ import info.monitorenter.gui.chart.traces.ATrace2D;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleStick> {
@@ -203,7 +204,7 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
 
         IAxis axis = chart.getAxisX();
 
-        LinkedList<TimeBlock> timeBlocksOnAxis = new LinkedList<>();
+        List<TimeBlock> timeBlocksOnAxis = new LinkedList<>();
 
         double
             min = axis.getMin(),
@@ -214,7 +215,7 @@ public class PointPainterSimpleStick extends APointPainter<PointPainterSimpleSti
 
             timeBlocksOnAxis = ((AxisLinearSkipTimeBlocks) axis).computeVisibleBlocks();
 
-            Set<TimeBlock> skipTimeBlocks = ((AxisLinearSkipTimeBlocks) axis).getSkipTimeBlocks();
+            List<TimeBlock> skipTimeBlocks = ((AxisLinearSkipTimeBlocks) axis).getSkipTimeBlocks();
 
             double axisWidthReduction = skipTimeBlocks.stream().mapToDouble(tB -> min < tB.startAt && tB.endAt < max ? tB.width() : 0).sum();
 

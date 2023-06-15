@@ -1,11 +1,10 @@
 package info.monitorenter.gui.chart.demos;
 
 import info.monitorenter.gui.chart.Chart2D;
-import info.monitorenter.gui.chart.ChartStack;
 import info.monitorenter.gui.chart.IAxis;
 import info.monitorenter.gui.chart.ITrace2D;
 import info.monitorenter.gui.chart.axis.AxisLinearSkipTimeBlocks;
-import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyPrice;
+import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicyBestFitByPixel;
 import info.monitorenter.gui.chart.axis.scalepolicy.AxisScalePolicySkipTimeBlocks;
 import info.monitorenter.gui.chart.labelformatters.LabelFormatterDate;
 import info.monitorenter.gui.chart.labelformatters.LabelFormatterNumber;
@@ -220,7 +219,7 @@ public class StonkChartDemo extends JPanel {
         yAxis.setPaintGrid(true);
 
         yAxis.setFormatter(new LabelFormatterNumber(new PriceFormat(yAxis)));
-        yAxis.setAxisScalePolicy(new AxisScalePolicyPrice());
+        yAxis.setAxisScalePolicy(new AxisScalePolicyBestFitByPixel());
 
     }
 
@@ -232,6 +231,7 @@ public class StonkChartDemo extends JPanel {
         yAxis.setPaintGrid(true);
 
         yAxis.setFormatter(new LabelFormatterNumber(new TradingVolumeFormat(yAxis)));
+        yAxis.setAxisScalePolicy(new AxisScalePolicyBestFitByPixel());
 
     }
 

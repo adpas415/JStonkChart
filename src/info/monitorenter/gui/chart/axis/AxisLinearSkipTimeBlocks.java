@@ -84,13 +84,16 @@ public class AxisLinearSkipTimeBlocks<T extends AxisScalePolicyTransformation> e
     super(formatter, scalePolicy);
   }
 
-  Set<TimeBlock> timeSkips = new HashSet<>();
+  List<TimeBlock> timeSkips = new ArrayList<>();
 
   public void addOmittedTimeBlock(double startAt, double endAt) {
+
     timeSkips.add(new TimeBlock(startAt, endAt));
+    Collections.sort(timeSkips, Comparator.comparingDouble(o -> o.startAt));
+
   }
 
-  public Set<TimeBlock> getSkipTimeBlocks() {
+  public List<TimeBlock> getSkipTimeBlocks() {
     return timeSkips;
   }
 
@@ -101,25 +104,22 @@ public class AxisLinearSkipTimeBlocks<T extends AxisScalePolicyTransformation> e
   public double computeOffset(double valueToTransform) {
 
     double toReturn = 0;
-
-    Set<TimeBlock> timeBlocks = getSkipTimeBlocks();
-
-    Set<TimeBlock> blocksInRange = timeBlocks.stream().filter(timeBlock -> timeBlock.startAt > getMinValue() && timeBlock.endAt < valueToTransform).sorted(Comparator.comparingDouble(o -> o.startAt)).collect(Collectors.toCollection(LinkedHashSet::new));
-
     TimeBlock inProgress = null;
 
-    for(TimeBlock otb : blocksInRange) {
-      if(inProgress == null) {
-        inProgress = new TimeBlock(otb.startAt, otb.endAt);
-      } else if(otb.startAt < inProgress.endAt && otb.endAt > inProgress.startAt) {
-        inProgress.startAt = Math.min(inProgress.startAt, otb.startAt);
-        inProgress.endAt = Math.max(inProgress.startAt, otb.endAt);
-      } else if(inProgress.startAt < otb.endAt && inProgress.endAt > otb.startAt) {
-        inProgress.startAt = Math.min(inProgress.startAt, otb.startAt);
-        inProgress.endAt = Math.max(inProgress.startAt, otb.endAt);
-      } else {
-        toReturn += inProgress.width();
-        inProgress = new TimeBlock(otb.startAt, otb.endAt);
+    for (TimeBlock timeBlock : timeSkips) {
+      if (timeBlock.startAt > getMinValue() && timeBlock.endAt < valueToTransform) {
+        if(inProgress == null) {
+          inProgress = new TimeBlock(timeBlock.startAt, timeBlock.endAt);
+        } else if(timeBlock.startAt < inProgress.endAt && timeBlock.endAt > inProgress.startAt) {
+          inProgress.startAt = Math.min(inProgress.startAt, timeBlock.startAt);
+          inProgress.endAt = Math.max(inProgress.startAt, timeBlock.endAt);
+        } else if(inProgress.startAt < timeBlock.endAt && inProgress.endAt > timeBlock.startAt) {
+          inProgress.startAt = Math.min(inProgress.startAt, timeBlock.startAt);
+          inProgress.endAt = Math.max(inProgress.startAt, timeBlock.endAt);
+        } else {
+          toReturn += inProgress.width();
+          inProgress = new TimeBlock(timeBlock.startAt, timeBlock.endAt);
+        }
       }
     }
 
@@ -127,11 +127,12 @@ public class AxisLinearSkipTimeBlocks<T extends AxisScalePolicyTransformation> e
       toReturn += inProgress.width();
 
     //round down if we happen to have moved directly into an omitted time block
-    for(TimeBlock tB : timeBlocks) {
-      if(tB.startAt < toReturn && toReturn < tB.endAt) {
-        return tB.startAt;
-      }
-    }
+//    for(TimeBlock tB : timeSkips) {
+//      if(tB.startAt < toReturn && toReturn < tB.endAt) {
+//        return tB.startAt;
+//      }
+//    }
+    // note: not sure what this block is actually doing, if anything.
 
     return toReturn;
 
@@ -188,21 +189,17 @@ public class AxisLinearSkipTimeBlocks<T extends AxisScalePolicyTransformation> e
 
   }
 
-  public LinkedList<TimeBlock> computeVisibleBlocks() {
+  public List<TimeBlock> computeVisibleBlocks() {
 
-    //todo: these need to be computed and sorted only when we're adding new time blocks to skip
-    LinkedList<TimeBlock> skipTimeBlocks = getSkipTimeBlocks().stream()
-      .sorted(Comparator.comparingDouble(o -> o.startAt))
-      .collect(Collectors.toCollection(LinkedList::new));
 
     double
       minValue = getMinValue(),
       maxValue = getMaxValue();
 
-    LinkedList<TimeBlock> visibleBlocks = new LinkedList<>();
+    List<TimeBlock> visibleBlocks = new ArrayList<>();
 
     TimeBlock previousOmission = null;
-    for(TimeBlock toSkip : skipTimeBlocks) {
+    for(TimeBlock toSkip : timeSkips) {
 
       if(visibleBlocks.isEmpty())
         visibleBlocks.add(new TimeBlock(minValue, toSkip.startAt));
@@ -235,7 +232,9 @@ public class AxisLinearSkipTimeBlocks<T extends AxisScalePolicyTransformation> e
     visibleTimeBlocksOnAxis.removeIf(tB -> tB.endAt < axisMinTime || axisMaxTime < tB.startAt );
 
     // add up the total units along our axis, mindful of the potentially clipped edges
-    double timeUnitsOnAxisX = visibleTimeBlocksOnAxis.stream().mapToDouble(tB -> Math.min(axisMaxTime, tB.endAt) - Math.max(tB.startAt, axisMinTime)).sum();
+    double timeUnitsOnAxisX = visibleTimeBlocksOnAxis.stream()
+            .mapToDouble(tB -> Math.min(axisMaxTime, tB.endAt) - Math.max(tB.startAt, axisMinTime))
+            .sum();
 
     // check if we've got empty space (outside explicitly declared time blocks)
     TimeBlock

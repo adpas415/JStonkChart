@@ -44,8 +44,9 @@ public class ChartStack extends JPanel {
 
     }
 
-    public void addChart(Chart2D chart) {
+    public void addChart(Chart2D chart, double resizeWeight) {
         charts.add(chart);
+        resizeWeights.put(chart, resizeWeight);
     }
         
     public void removeChart(Chart2D chart) {
@@ -101,9 +102,10 @@ public class ChartStack extends JPanel {
             while(iter.hasNext()) {
                 
                 Chart2D nextChart = iter.next();
+                double resizeWeight = getResizeWeight(nextChart);
                 
                 if(nextChart.isVisible()) {
-                    topPane = new MinimalistSplitPane(JSplitPane.VERTICAL_SPLIT, dividerColor, dividerThickness, topPane == null ? firstChart : topPane, nextChart);
+                    topPane = new MinimalistSplitPane(JSplitPane.VERTICAL_SPLIT, dividerColor, dividerThickness, resizeWeight, topPane == null ? firstChart : topPane, nextChart);
                 } else if( topPane == null && !iter.hasNext() )
                     topPane = firstChart;
 
@@ -128,6 +130,12 @@ public class ChartStack extends JPanel {
         }.start();
     }
 
+    Map<Chart2D, Double> resizeWeights = new HashMap<>();
+
+    private double getResizeWeight(Chart2D nextChart) {
+        return resizeWeights.getOrDefault(nextChart, 1d);
+    }
+
     public static class MinimalistSplitPane extends JSplitPane {
         public MinimalistSplitPane() {
             this(Color.black, 6);
@@ -136,10 +144,10 @@ public class ChartStack extends JPanel {
             setup(separatorColor, dividerThickness);
         }
 
-        public MinimalistSplitPane(int orientation, Color dividerColor, int dividerThickness, Component component1, Component component2) {
+        public MinimalistSplitPane(int orientation, Color dividerColor, int dividerThickness, double resizeWeight, Component component1, Component component2) {
             super(orientation, component1, component2);
             setup(dividerColor, dividerThickness);
-            setResizeWeight(1);
+            setResizeWeight(resizeWeight);
         }
 
         private void setup(Color separatorColor, int dividerThickness) {

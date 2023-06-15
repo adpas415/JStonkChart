@@ -12,6 +12,7 @@ import info.monitorenter.util.Range;
 
 import java.awt.*;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -83,7 +84,7 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
 
     IAxis axis = chart.getAxisX();
 
-    LinkedList<TimeBlock> timeBlocksOnAxis = new LinkedList<>();
+    List<TimeBlock> timeBlocksOnAxis = new LinkedList<>();
 
     double
       min = axis.getMin(),
@@ -94,7 +95,7 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
 
       timeBlocksOnAxis = ((AxisLinearSkipTimeBlocks) axis).computeVisibleBlocks();
 
-      Set<TimeBlock> skipTimeBlocks = ((AxisLinearSkipTimeBlocks) axis).getSkipTimeBlocks();
+      List<TimeBlock> skipTimeBlocks = ((AxisLinearSkipTimeBlocks) axis).getSkipTimeBlocks();
 
       double axisWidthReduction = skipTimeBlocks.stream().mapToDouble(tB -> min < tB.startAt && tB.endAt < max ? tB.width() : 0).sum();
 
@@ -210,7 +211,7 @@ public class PointPainterCandleStick extends APointPainter<PointPainterCandleSti
             IAxis<?> xAxis = chart.getAxisX(trace);
 
             if(xAxis instanceof AxisLinearSkipTimeBlocks timeSkipAxis) {
-              Set<TimeBlock> skipTimeBlocks = timeSkipAxis.getSkipTimeBlocks();
+              List<TimeBlock> skipTimeBlocks = timeSkipAxis.getSkipTimeBlocks();
               for(TimeBlock block : skipTimeBlocks) {
                 if(block.startAt <= candleStick.getX() && candleStick.getX() <= block.endAt)
                   return; // don't paint this bar, it's in an omitted block.
